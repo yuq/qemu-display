@@ -2,13 +2,8 @@
 
 ## Introduction
 
-*WIP* Rust crates to interact with a ``-display dbus`` QEMU. The development
-branch is currently: https://gitlab.com/marcandre.lureau/qemu/-/tree/dbus
-
-See also the QEMU mailing list for progress.
-
-Most dependencies are released, but notably zbus 2.0 is still in beta. RDW and
-VTE4 widgets are also unreleased at this stage.
+*WIP* Rust crates to interact with a ``-display dbus`` QEMU.
+Some dependencies, such as RDW are also in development and unreleased.
 
 ## Features
 
