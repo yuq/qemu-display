@@ -10,7 +10,6 @@ use crate::Result;
 #[dbus_proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Chardev")]
 pub trait Chardev {
     /// Register method
-    #[cfg(unix)]
     fn register(&self, stream: Fd) -> zbus::Result<()>;
 
     /// SendBreak method
