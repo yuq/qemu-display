@@ -128,6 +128,8 @@ pub trait ConsoleListenerHandler: 'static + Send + Sync {
     #[cfg(unix)]
     async fn update_dmabuf(&mut self, update: UpdateDMABUF);
 
+    async fn disable(&mut self);
+
     async fn mouse_set(&mut self, set: MouseSet);
 
     async fn cursor_define(&mut self, cursor: Cursor);
@@ -294,6 +296,10 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
             .update_dmabuf(UpdateDMABUF { x, y, w, h })
             .await;
         Ok(())
+    }
+
+    async fn disable(&mut self) {
+        self.handler.disable().await;
     }
 
     async fn mouse_set(&mut self, x: i32, y: i32, on: i32) {
