@@ -1,7 +1,4 @@
-use std::env::args;
-use std::error::Error;
-use std::thread::sleep;
-use std::time::Duration;
+use std::{env::args, error::Error, thread::sleep, time::Duration};
 
 use qemu_display::Display;
 

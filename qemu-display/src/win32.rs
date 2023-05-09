@@ -1,7 +1,9 @@
 use std::io;
-use windows::Win32::Foundation::{CloseHandle, HANDLE};
-use windows::Win32::Networking::WinSock::{WSADuplicateSocketW, SOCKET, WSAPROTOCOL_INFOW};
-use windows::Win32::System::Threading::PROCESS_ACCESS_RIGHTS;
+use windows::Win32::{
+    Foundation::{CloseHandle, HANDLE},
+    Networking::WinSock::{WSADuplicateSocketW, SOCKET, WSAPROTOCOL_INFOW},
+    System::Threading::PROCESS_ACCESS_RIGHTS,
+};
 
 #[cfg(feature = "qmp")]
 use uds_windows::UnixStream;
@@ -52,8 +54,7 @@ impl ProcessHandle {
     }
 
     pub fn process_id(&self) -> crate::Result<u32> {
-        use windows::Win32::Foundation::GetLastError;
-        use windows::Win32::System::Threading::GetProcessId;
+        use windows::Win32::{Foundation::GetLastError, System::Threading::GetProcessId};
 
         unsafe {
             let pid = GetProcessId(self.0);

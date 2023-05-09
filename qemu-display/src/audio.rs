@@ -8,8 +8,7 @@ use uds_windows::UnixStream;
 use zbus::zvariant::Fd;
 use zbus::{dbus_interface, dbus_proxy, Connection};
 
-use crate::util;
-use crate::Result;
+use crate::{util, Result};
 
 #[derive(Debug)]
 pub struct PCMInfo {
