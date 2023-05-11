@@ -247,6 +247,10 @@ impl ConsoleListenerHandler for ConsoleListener {
         inner.image = image_from_vec(s.format, s.width, s.height, s.stride, s.data);
     }
 
+    async fn disable(&mut self) {
+        dbg!();
+    }
+
     async fn update(&mut self, u: qemu_display::Update) {
         let mut inner = self.server.inner.lock().unwrap();
         let update = image_from_vec(u.format, u.w as _, u.h as _, u.stride, u.data);
