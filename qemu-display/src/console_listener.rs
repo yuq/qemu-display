@@ -138,18 +138,6 @@ pub trait ConsoleListenerHandler: 'static + Send + Sync {
 
     async fn update(&mut self, update: Update);
 
-    #[cfg(windows)]
-    async fn scanout_map(&mut self, scanout: ScanoutMap);
-
-    #[cfg(windows)]
-    async fn update_map(&mut self, update: UpdateMap);
-
-    #[cfg(windows)]
-    async fn scanout_d3d11_texture2d(&mut self, scanout: ScanoutD3dTexture2d);
-
-    #[cfg(windows)]
-    async fn update_d3d11_texture2d(&mut self, update: UpdateD3dTexture2d);
-
     #[cfg(unix)]
     async fn scanout_dmabuf(&mut self, scanout: ScanoutDMABUF);
 
@@ -212,126 +200,6 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
                 data: data.into_vec(),
             })
             .await;
-    }
-
-    #[cfg(windows)]
-    async fn scanout_map(
-        &mut self,
-        handle: u64,
-        offset: u32,
-        width: u32,
-        height: u32,
-        stride: u32,
-        format: u32,
-    ) -> zbus::fdo::Result<()> {
-        let map = ScanoutMap {
-            handle,
-            offset,
-            width,
-            height,
-            stride,
-            format,
-        };
-        self.handler.scanout_map(map).await;
-        Ok(())
-    }
-
-    #[cfg(not(windows))]
-    async fn scanout_map(
-        &mut self,
-        _handle: u64,
-        _offset: u32,
-        _width: u32,
-        _height: u32,
-        _stride: u32,
-        _format: u32,
-    ) -> zbus::fdo::Result<()> {
-        Err(zbus::fdo::Error::NotSupported(
-            "Shared map is not support on !windows".into(),
-        ))
-    }
-
-    #[cfg(windows)]
-    async fn update_map(&mut self, x: i32, y: i32, w: i32, h: i32) -> zbus::fdo::Result<()> {
-        let up = UpdateMap { x, y, w, h };
-        self.handler.update_map(up).await;
-        Ok(())
-    }
-
-    #[cfg(not(windows))]
-    async fn update_map(&mut self, _x: i32, _y: i32, _w: i32, _h: i32) -> zbus::fdo::Result<()> {
-        Err(zbus::fdo::Error::NotSupported(
-            "Shared map is not support on !windows".into(),
-        ))
-    }
-
-    #[cfg(windows)]
-    async fn scanout_d3d11_texture2d(
-        &mut self,
-        handle: u64,
-        tex_width: u32,
-        tex_height: u32,
-        y0_top: bool,
-        x: u32,
-        y: u32,
-        w: u32,
-        h: u32,
-    ) -> zbus::fdo::Result<()> {
-        let texture = ScanoutD3dTexture2d {
-            handle,
-            tex_width,
-            tex_height,
-            y0_top,
-            x,
-            y,
-            w,
-            h,
-        };
-        self.handler.scanout_d3d11_texture2d(texture).await;
-        Ok(())
-    }
-
-    #[cfg(not(windows))]
-    async fn scanout_d3d11_texture2d(
-        &mut self,
-        _handle: u64,
-        _tex_width: u32,
-        _tex_height: u32,
-        _y0_top: bool,
-        _x: u32,
-        _y: u32,
-        _w: u32,
-        _h: u32,
-    ) -> zbus::fdo::Result<()> {
-        Err(zbus::fdo::Error::NotSupported(
-            "D3D is not support on !windows".into(),
-        ))
-    }
-
-    #[cfg(windows)]
-    async fn update_d3d11_texture2d(
-        &mut self,
-        x: i32,
-        y: i32,
-        w: i32,
-        h: i32,
-    ) -> zbus::fdo::Result<()> {
-        let up = UpdateD3dTexture2d { x, y, w, h };
-        self.handler.update_d3d11_texture2d(up).await;
-        Ok(())
-    }
-
-    #[cfg(not(windows))]
-    async fn update_d3d11_texture2d(
-        &mut self,
-        _x: i32,
-        _y: i32,
-        _w: i32,
-        _h: i32,
-    ) -> zbus::fdo::Result<()> {
-        Err(zbus::fdo::Error::NotSupported(
-            "D3d is not support on !windows".into(),
-        ))
     }
 
     #[cfg(not(unix))]
@@ -432,5 +300,113 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
 impl<H: ConsoleListenerHandler> Drop for ConsoleListener<H> {
     fn drop(&mut self) {
         self.handler.disconnected();
+    }
+}
+
+#[cfg(windows)]
+#[async_trait::async_trait]
+pub trait ConsoleListenerMapHandler: 'static + Send + Sync {
+    async fn scanout_map(&mut self, scanout: ScanoutMap);
+
+    async fn update_map(&mut self, update: UpdateMap);
+}
+
+#[cfg(windows)]
+#[derive(Debug)]
+pub(crate) struct ConsoleListenerMap<H: ConsoleListenerMapHandler> {
+    handler: H,
+}
+
+#[cfg(windows)]
+#[dbus_interface(name = "org.qemu.Display1.Listener.Win32.Map")]
+impl<H: ConsoleListenerMapHandler> ConsoleListenerMap<H> {
+    async fn scanout_map(
+        &mut self,
+        handle: u64,
+        offset: u32,
+        width: u32,
+        height: u32,
+        stride: u32,
+        format: u32,
+    ) -> zbus::fdo::Result<()> {
+        let map = ScanoutMap {
+            handle,
+            offset,
+            width,
+            height,
+            stride,
+            format,
+        };
+        self.handler.scanout_map(map).await;
+        Ok(())
+    }
+
+    async fn update_map(&mut self, x: i32, y: i32, w: i32, h: i32) -> zbus::fdo::Result<()> {
+        let up = UpdateMap { x, y, w, h };
+        self.handler.update_map(up).await;
+        Ok(())
+    }
+}
+
+#[cfg(windows)]
+impl<H: ConsoleListenerMapHandler> ConsoleListenerMap<H> {
+    pub(crate) fn new(handler: H) -> Self {
+        Self { handler }
+    }
+}
+
+#[cfg(windows)]
+#[async_trait::async_trait]
+pub trait ConsoleListenerD3d11Handler: 'static + Send + Sync {
+    async fn scanout_texture2d(&mut self, scanout: ScanoutD3dTexture2d);
+
+    async fn update_texture2d(&mut self, update: UpdateD3dTexture2d);
+}
+
+#[cfg(windows)]
+#[derive(Debug)]
+pub(crate) struct ConsoleListenerD3d11<H: ConsoleListenerD3d11Handler> {
+    handler: H,
+}
+
+#[cfg(windows)]
+#[dbus_interface(name = "org.qemu.Display1.Listener.Win32.D3d11")]
+impl<H: ConsoleListenerD3d11Handler> ConsoleListenerD3d11<H> {
+    async fn scanout_texture2d(
+        &mut self,
+        handle: u64,
+        tex_width: u32,
+        tex_height: u32,
+        y0_top: bool,
+        x: u32,
+        y: u32,
+        w: u32,
+        h: u32,
+    ) -> zbus::fdo::Result<()> {
+        let texture = ScanoutD3dTexture2d {
+            handle,
+            tex_width,
+            tex_height,
+            y0_top,
+            x,
+            y,
+            w,
+            h,
+        };
+        self.handler.scanout_texture2d(texture).await;
+        Ok(())
+    }
+
+    async fn update_texture2d(&mut self, x: i32, y: i32, w: i32, h: i32) -> zbus::fdo::Result<()> {
+        let up = UpdateD3dTexture2d { x, y, w, h };
+        self.handler.update_texture2d(up).await;
+        Ok(())
+    }
+}
+
+#[cfg(windows)]
+impl<H: ConsoleListenerD3d11Handler> ConsoleListenerD3d11<H> {
+    pub(crate) fn new(handler: H) -> Self {
+        Self { handler }
     }
 }

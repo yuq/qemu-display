@@ -10,6 +10,11 @@ use zbus::zvariant::Fd;
 use zbus::{dbus_proxy, zvariant::ObjectPath, Connection};
 
 use crate::{util, ConsoleListener, ConsoleListenerHandler, KeyboardProxy, MouseProxy, Result};
+#[cfg(windows)]
+use crate::{
+    ConsoleListenerD3d11, ConsoleListenerD3d11Handler, ConsoleListenerMap,
+    ConsoleListenerMapHandler,
+};
 
 #[dbus_proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Console")]
 pub trait Console {
@@ -104,6 +109,41 @@ impl Console {
             .await?;
         self.listener.replace(Some(c));
         Ok(())
+    }
+
+    #[cfg(windows)]
+    pub async fn set_map_listener<H: ConsoleListenerMapHandler>(&self, handler: H) -> Result<bool> {
+        if let Some(l) = self.listener.borrow_mut().as_mut() {
+            return l
+                .object_server()
+                .at(
+                    "/org/qemu/Display1/Listener",
+                    ConsoleListenerMap::new(handler),
+                )
+                .await
+                .map_err(|e| e.into());
+        }
+
+        Err(crate::Error::Failed("Must call register first!".into()))
+    }
+
+    #[cfg(windows)]
+    pub async fn set_d3d11_listener<H: ConsoleListenerD3d11Handler>(
+        &self,
+        handler: H,
+    ) -> Result<bool> {
+        if let Some(l) = self.listener.borrow_mut().as_mut() {
+            return l
+                .object_server()
+                .at(
+                    "/org/qemu/Display1/Listener",
+                    ConsoleListenerD3d11::new(handler),
+                )
+                .await
+                .map_err(|e| e.into());
+        }
+
+        Err(crate::Error::Failed("Must call register first!".into()))
     }
 
     pub fn unregister_listener(&mut self) {
