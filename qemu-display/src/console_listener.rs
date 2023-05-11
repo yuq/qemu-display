@@ -151,6 +151,8 @@ pub trait ConsoleListenerHandler: 'static + Send + Sync {
     async fn cursor_define(&mut self, cursor: Cursor);
 
     fn disconnected(&mut self);
+
+    fn interfaces(&self) -> Vec<String>;
 }
 
 #[derive(Debug)]
@@ -288,6 +290,11 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
                 data,
             })
             .await;
+    }
+
+    #[dbus_interface(property)]
+    fn interfaces(&self) -> Vec<String> {
+        self.handler.interfaces()
     }
 }
 
