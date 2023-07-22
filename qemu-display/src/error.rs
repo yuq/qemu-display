@@ -62,8 +62,8 @@ impl From<zbus::fdo::Error> for Error {
     }
 }
 
-impl From<zvariant::Error> for Error {
-    fn from(e: zvariant::Error) -> Self {
+impl From<zbus::zvariant::Error> for Error {
+    fn from(e: zbus::zvariant::Error) -> Self {
         Error::Zbus(e.into())
     }
 }

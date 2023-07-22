@@ -7,9 +7,11 @@ members = [
     "qemu-vte",
     "xtask",
 ]
-
 default-members = ["qemu-rdw"]
+resolver = "2"
 
 [patch.crates-io]
+zbus = { git = "https://github.com/dbus2/zbus.git" }
+zvariant = { git = "https://github.com/dbus2/zbus.git" }
 vnc = { git = "https://github.com/elmarco/rust-vnc", branch = "server" }
-rdw4 = { git = "https://gitlab.gnome.org/malureau/rdw.git" }
+rdw4 = { path = "../rdw/rdw4" }

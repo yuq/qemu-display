@@ -1,7 +1,9 @@
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::convert::TryFrom;
-use zbus::{dbus_interface, dbus_proxy, zvariant::ObjectPath};
-use zvariant::Type;
+use zbus::{
+    dbus_interface, dbus_proxy,
+    zvariant::{ObjectPath, Type},
+};
 
 use crate::Result;
 

@@ -1,7 +1,6 @@
 use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
-use zbus::dbus_proxy;
-use zvariant::Type;
+use zbus::{dbus_proxy, zvariant::Type};
 
 #[bitflags]
 #[repr(u32)]
