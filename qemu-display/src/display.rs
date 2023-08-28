@@ -8,9 +8,9 @@ use zbus::{
     fdo,
     fdo::ManagedObjects,
     names::{BusName, OwnedUniqueName, UniqueName, WellKnownName},
+    zvariant::OwnedObjectPath,
     Connection, OwnerChangedStream,
 };
-use zvariant::OwnedObjectPath;
 
 #[cfg(unix)]
 use crate::UsbRedir;

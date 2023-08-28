@@ -28,7 +28,7 @@ use crate::{Chardev, Error, Result};
 struct InnerHandler {
     #[allow(unused)] // keep the device opened, as rusb doesn't take it
     #[cfg(unix)]
-    device_fd: Option<zvariant::OwnedFd>,
+    device_fd: Option<zbus::zvariant::OwnedFd>,
     stream: UnixStream,
     ctxt: rusb::Context,
     ctxt_thread: Option<JoinHandle<()>>,
