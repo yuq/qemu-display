@@ -37,7 +37,7 @@ fn main() {
             c.proxy.name().await.expect("Chardev not found");
 
             let (p0, p1) = UnixStream::pair().unwrap();
-            if c.proxy.register(p1.as_raw_fd().into()).await.is_ok() {
+            if c.proxy.register((&p1).into()).await.is_ok() {
                 let ostream = unsafe { gio::UnixOutputStream::with_fd(p0.as_raw_fd()) };
                 let istream = unsafe { gio::UnixInputStream::take_fd(p0) }
                     .dynamic_cast::<gio::PollableInputStream>()
