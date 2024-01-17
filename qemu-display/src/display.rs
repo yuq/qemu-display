@@ -200,7 +200,7 @@ impl<'d> Display<'d> {
     }
 
     pub async fn receive_owner_changed(&self) -> Result<OwnerChangedStream<'_>> {
-        Ok(self.inner.proxy.receive_owner_changed().await?)
+        Ok(self.inner.proxy.inner().receive_owner_changed().await?)
     }
 
     pub async fn audio(&self) -> Result<Option<Audio>> {

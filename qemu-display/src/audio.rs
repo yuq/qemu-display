@@ -58,10 +58,10 @@ pub struct Volume {
 )]
 trait Audio {
     /// RegisterOutListener method
-    fn register_out_listener(&self, listener: Fd) -> zbus::Result<()>;
+    fn register_out_listener(&self, listener: Fd<'_>) -> zbus::Result<()>;
 
     /// RegisterInListener method
-    fn register_in_listener(&self, listener: Fd) -> zbus::Result<()>;
+    fn register_in_listener(&self, listener: Fd<'_>) -> zbus::Result<()>;
 }
 
 #[derive(derivative::Derivative)]

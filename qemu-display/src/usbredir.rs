@@ -109,7 +109,7 @@ impl Handler {
         };
 
         let (stream, peer) = UnixStream::pair()?;
-        chardev.proxy.register(peer.as_raw_fd().into()).await?;
+        chardev.proxy.register((&peer).into()).await?;
 
         let c = ctxt.clone();
         let stream_fd = stream.as_raw_fd();

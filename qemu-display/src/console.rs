@@ -19,7 +19,7 @@ use crate::{
 #[dbus_proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Console")]
 pub trait Console {
     /// RegisterListener method
-    fn register_listener(&self, listener: Fd) -> zbus::Result<()>;
+    fn register_listener(&self, listener: Fd<'_>) -> zbus::Result<()>;
 
     /// SetUIInfo method
     #[dbus_proxy(name = "SetUIInfo")]

@@ -1,7 +1,7 @@
 use crate::Result;
 
 #[cfg(unix)]
-use std::os::unix::{io::AsRawFd, net::UnixStream};
+use std::os::unix::net::UnixStream;
 #[cfg(windows)]
 use win32::Fd;
 #[cfg(unix)]
@@ -21,7 +21,7 @@ use windows::Win32::System::Threading::PROCESS_DUP_HANDLE;
 pub fn prepare_uds_pass(#[cfg(windows)] peer_pid: u32, us: &UnixStream) -> Result<Fd> {
     #[cfg(unix)]
     {
-        Ok(us.as_raw_fd().into())
+        Ok(us.into())
     }
 
     #[cfg(windows)]

@@ -208,7 +208,7 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
     #[dbus_interface(name = "ScanoutDMABUF")]
     async fn scanout_dmabuf(
         &mut self,
-        _fd: Fd,
+        _fd: Fd<'_>,
         _width: u32,
         _height: u32,
         _stride: u32,
@@ -225,7 +225,7 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
     #[dbus_interface(name = "ScanoutDMABUF")]
     async fn scanout_dmabuf(
         &mut self,
-        fd: Fd,
+        fd: Fd<'_>,
         width: u32,
         height: u32,
         stride: u32,

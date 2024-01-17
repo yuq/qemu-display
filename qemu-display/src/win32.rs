@@ -8,7 +8,7 @@ use windows::Win32::{
 #[cfg(feature = "qmp")]
 use uds_windows::UnixStream;
 
-pub type Fd = Vec<u8>;
+pub type Fd<'a> = Vec<u8>;
 
 // A process handle
 pub struct ProcessHandle(HANDLE);
