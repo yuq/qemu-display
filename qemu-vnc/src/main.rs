@@ -287,6 +287,10 @@ impl ConsoleListenerHandler for ConsoleListener {
     fn disconnected(&mut self) {
         dbg!();
     }
+
+    fn interfaces(&self) -> Vec<String> {
+        vec![]
+    }
 }
 
 #[derive(Debug)]

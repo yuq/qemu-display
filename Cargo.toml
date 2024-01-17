@@ -10,6 +10,11 @@ members = [
 default-members = ["qemu-rdw"]
 resolver = "2"
 
+[workspace.dependencies]
+qemu-display = { path = "qemu-display", version = "0.1" }
+keycodemap = { path = "keycodemap", version = "0.1" }
+zbus = "4"
+
 [patch.crates-io]
 zbus = { git = "https://github.com/dbus2/zbus.git" }
 zvariant = { git = "https://github.com/dbus2/zbus.git" }
