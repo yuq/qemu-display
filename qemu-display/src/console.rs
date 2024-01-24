@@ -2,7 +2,7 @@
 use crate::win32::Fd;
 #[cfg(unix)]
 use std::os::unix::net::UnixStream;
-use std::{cell::RefCell, convert::TryFrom};
+use std::{convert::TryFrom, sync::RwLock};
 #[cfg(windows)]
 use uds_windows::UnixStream;
 #[cfg(unix)]
@@ -58,7 +58,7 @@ pub struct Console {
     pub keyboard: KeyboardProxy<'static>,
     #[derivative(Debug = "ignore")]
     pub mouse: MouseProxy<'static>,
-    listener: RefCell<Option<Connection>>,
+    listener: RwLock<Option<Connection>>,
     #[cfg(windows)]
     peer_pid: u32,
 }
@@ -76,7 +76,7 @@ impl Console {
             proxy,
             keyboard,
             mouse,
-            listener: RefCell::new(None),
+            listener: RwLock::new(None),
             #[cfg(windows)]
             peer_pid,
         })
@@ -107,13 +107,13 @@ impl Console {
             .serve_at("/org/qemu/Display1/Listener", ConsoleListener::new(handler))?
             .build()
             .await?;
-        self.listener.replace(Some(c));
+        *self.listener.write().unwrap() = Some(c);
         Ok(())
     }
 
     #[cfg(windows)]
     pub async fn set_map_listener<H: ConsoleListenerMapHandler>(&self, handler: H) -> Result<bool> {
-        if let Some(l) = self.listener.borrow_mut().as_mut() {
+        if let Some(l) = &*self.listener.write().unwrap() {
             return l
                 .object_server()
                 .at(
@@ -132,7 +132,7 @@ impl Console {
         &self,
         handler: H,
     ) -> Result<bool> {
-        if let Some(l) = self.listener.borrow_mut().as_mut() {
+        if let Some(l) = &*self.listener.write().unwrap() {
             return l
                 .object_server()
                 .at(
@@ -146,7 +146,7 @@ impl Console {
         Err(crate::Error::Failed("Must call register first!".into()))
     }
 
-    pub fn unregister_listener(&mut self) {
-        self.listener.replace(None);
+    pub fn unregister_listener(&self) {
+        *self.listener.write().unwrap() = None;
     }
 }
