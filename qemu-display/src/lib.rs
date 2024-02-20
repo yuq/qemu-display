@@ -36,6 +36,9 @@ pub use mouse::*;
 mod display;
 pub use display::*;
 
+mod multi_touch;
+pub use multi_touch::*;
+
 #[cfg(unix)]
 mod usbredir;
 #[cfg(unix)]

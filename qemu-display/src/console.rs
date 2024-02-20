@@ -9,7 +9,10 @@ use uds_windows::UnixStream;
 use zbus::zvariant::Fd;
 use zbus::{zvariant::ObjectPath, Connection};
 
-use crate::{util, ConsoleListener, ConsoleListenerHandler, KeyboardProxy, MouseProxy, Result};
+use crate::{
+    util, ConsoleListener, ConsoleListenerHandler, KeyboardProxy, MouseProxy, MultiTouchProxy,
+    Result,
+};
 #[cfg(windows)]
 use crate::{
     ConsoleListenerD3d11, ConsoleListenerD3d11Handler, ConsoleListenerMap,
@@ -58,6 +61,8 @@ pub struct Console {
     pub keyboard: KeyboardProxy<'static>,
     #[derivative(Debug = "ignore")]
     pub mouse: MouseProxy<'static>,
+    #[derivative(Debug = "ignore")]
+    pub multi_touch: MultiTouchProxy<'static>,
     listener: RwLock<Option<Connection>>,
     #[cfg(windows)]
     peer_pid: u32,
@@ -72,10 +77,15 @@ impl Console {
             .build()
             .await?;
         let mouse = MouseProxy::builder(conn).path(&obj_path)?.build().await?;
+        let multi_touch = MultiTouchProxy::builder(conn)
+            .path(&obj_path)?
+            .build()
+            .await?;
         Ok(Self {
             proxy,
             keyboard,
             mouse,
+            multi_touch,
             listener: RwLock::new(None),
             #[cfg(windows)]
             peer_pid,
