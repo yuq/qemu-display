@@ -3,11 +3,11 @@ use crate::win32::Fd;
 use std::convert::TryFrom;
 #[cfg(unix)]
 use zbus::zvariant::Fd;
-use zbus::{dbus_proxy, zvariant::ObjectPath};
+use zbus::zvariant::ObjectPath;
 
 use crate::Result;
 
-#[dbus_proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Chardev")]
+#[zbus::proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Chardev")]
 pub trait Chardev {
     /// Register method
     fn register(&self, stream: Fd<'_>) -> zbus::Result<()>;
@@ -16,19 +16,19 @@ pub trait Chardev {
     fn send_break(&self) -> zbus::Result<()>;
 
     /// Echo property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn echo(&self) -> zbus::Result<bool>;
 
     /// FEOpened property
-    #[dbus_proxy(property, name = "FEOpened")]
+    #[zbus(property, name = "FEOpened")]
     fn fe_opened(&self) -> zbus::Result<bool>;
 
     /// Name property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn name(&self) -> zbus::Result<String>;
 
     /// Owner property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn owner(&self) -> zbus::Result<String>;
 }
 

@@ -78,7 +78,7 @@ impl DeviceHandler for Handler {
 }
 
 #[cfg(unix)]
-#[zbus::dbus_proxy(
+#[zbus::proxy(
     interface = "org.freedesktop.usbredir1",
     default_service = "org.freedesktop.usbredir1",
     default_path = "/org/freedesktop/usbredir1"

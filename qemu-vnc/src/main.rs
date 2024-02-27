@@ -321,7 +321,7 @@ impl Server {
     }
 
     fn stop_console(&self) -> Result<(), Box<dyn Error>> {
-        let mut inner = self.inner.lock().unwrap();
+        let inner = self.inner.lock().unwrap();
         inner.console.unregister_listener();
         Ok(())
     }

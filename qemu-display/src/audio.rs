@@ -6,7 +6,7 @@ use std::os::unix::net::UnixStream;
 use uds_windows::UnixStream;
 #[cfg(unix)]
 use zbus::zvariant::Fd;
-use zbus::{dbus_interface, dbus_proxy, Connection};
+use zbus::Connection;
 
 use crate::{util, Result};
 
@@ -51,7 +51,7 @@ pub struct Volume {
     pub volume: Vec<u8>,
 }
 
-#[dbus_proxy(
+#[zbus::proxy(
     default_service = "org.qemu",
     default_path = "/org/qemu/Display1/Audio",
     interface = "org.qemu.Display1.Audio"
@@ -92,7 +92,7 @@ struct AudioOutListener<H: AudioOutHandler> {
     handler: H,
 }
 
-#[dbus_interface(name = "org.qemu.Display1.AudioOutListener")]
+#[zbus::interface(name = "org.qemu.Display1.AudioOutListener")]
 impl<H: AudioOutHandler> AudioOutListener<H> {
     /// Init method
     async fn init(
@@ -170,7 +170,7 @@ struct AudioInListener<H: AudioInHandler> {
     handler: H,
 }
 
-#[dbus_interface(name = "org.qemu.Display1.AudioInListener")]
+#[zbus::interface(name = "org.qemu.Display1.AudioInListener")]
 impl<H: AudioInHandler> AudioInListener<H> {
     /// Init method
     async fn init(

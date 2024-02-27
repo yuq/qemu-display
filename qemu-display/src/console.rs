@@ -7,7 +7,7 @@ use std::{cell::RefCell, convert::TryFrom};
 use uds_windows::UnixStream;
 #[cfg(unix)]
 use zbus::zvariant::Fd;
-use zbus::{dbus_proxy, zvariant::ObjectPath, Connection};
+use zbus::{zvariant::ObjectPath, Connection};
 
 use crate::{util, ConsoleListener, ConsoleListenerHandler, KeyboardProxy, MouseProxy, Result};
 #[cfg(windows)]
@@ -16,13 +16,13 @@ use crate::{
     ConsoleListenerMapHandler,
 };
 
-#[dbus_proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Console")]
+#[zbus::proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Console")]
 pub trait Console {
     /// RegisterListener method
     fn register_listener(&self, listener: Fd<'_>) -> zbus::Result<()>;
 
     /// SetUIInfo method
-    #[dbus_proxy(name = "SetUIInfo")]
+    #[zbus(name = "SetUIInfo")]
     fn set_ui_info(
         &self,
         width_mm: u16,
@@ -33,19 +33,19 @@ pub trait Console {
         height: u32,
     ) -> zbus::Result<()>;
 
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn label(&self) -> zbus::Result<String>;
 
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn head(&self) -> zbus::Result<u32>;
 
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn type_(&self) -> zbus::Result<String>;
 
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn width(&self) -> zbus::Result<u32>;
 
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn height(&self) -> zbus::Result<u32>;
 }
 

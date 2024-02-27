@@ -4,7 +4,6 @@ use derivative::Derivative;
 use std::ops::Drop;
 #[cfg(unix)]
 use std::os::unix::io::{AsRawFd, IntoRawFd, RawFd};
-use zbus::dbus_interface;
 #[cfg(unix)]
 use zbus::zvariant::Fd;
 
@@ -160,7 +159,7 @@ pub(crate) struct ConsoleListener<H: ConsoleListenerHandler> {
     handler: H,
 }
 
-#[dbus_interface(name = "org.qemu.Display1.Listener")]
+#[zbus::interface(name = "org.qemu.Display1.Listener")]
 impl<H: ConsoleListenerHandler> ConsoleListener<H> {
     async fn scanout(
         &mut self,
@@ -205,7 +204,7 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
     }
 
     #[cfg(not(unix))]
-    #[dbus_interface(name = "ScanoutDMABUF")]
+    #[zbus(name = "ScanoutDMABUF")]
     async fn scanout_dmabuf(
         &mut self,
         _fd: Fd<'_>,
@@ -222,7 +221,7 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
     }
 
     #[cfg(unix)]
-    #[dbus_interface(name = "ScanoutDMABUF")]
+    #[zbus(name = "ScanoutDMABUF")]
     async fn scanout_dmabuf(
         &mut self,
         fd: Fd<'_>,
@@ -249,7 +248,7 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
     }
 
     #[cfg(not(unix))]
-    #[dbus_interface(name = "UpdateDMABUF")]
+    #[zbus(name = "UpdateDMABUF")]
     async fn update_dmabuf(&mut self, _x: i32, _y: i32, _w: i32, _h: i32) -> zbus::fdo::Result<()> {
         Err(zbus::fdo::Error::NotSupported(
             "DMABUF is not support on !unix".into(),
@@ -257,7 +256,7 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
     }
 
     #[cfg(unix)]
-    #[dbus_interface(name = "UpdateDMABUF")]
+    #[zbus(name = "UpdateDMABUF")]
     async fn update_dmabuf(&mut self, x: i32, y: i32, w: i32, h: i32) -> zbus::fdo::Result<()> {
         self.handler
             .update_dmabuf(UpdateDMABUF { x, y, w, h })
@@ -292,7 +291,7 @@ impl<H: ConsoleListenerHandler> ConsoleListener<H> {
             .await;
     }
 
-    #[dbus_interface(property)]
+    #[zbus(property)]
     fn interfaces(&self) -> Vec<String> {
         self.handler.interfaces()
     }
@@ -325,7 +324,7 @@ pub(crate) struct ConsoleListenerMap<H: ConsoleListenerMapHandler> {
 }
 
 #[cfg(windows)]
-#[dbus_interface(name = "org.qemu.Display1.Listener.Win32.Map")]
+#[zbus::interface(name = "org.qemu.Display1.Listener.Win32.Map")]
 impl<H: ConsoleListenerMapHandler> ConsoleListenerMap<H> {
     async fn scanout_map(
         &mut self,
@@ -377,7 +376,7 @@ pub(crate) struct ConsoleListenerD3d11<H: ConsoleListenerD3d11Handler> {
 }
 
 #[cfg(windows)]
-#[dbus_interface(name = "org.qemu.Display1.Listener.Win32.D3d11")]
+#[zbus::interface(name = "org.qemu.Display1.Listener.Win32.D3d11")]
 impl<H: ConsoleListenerD3d11Handler> ConsoleListenerD3d11<H> {
     async fn scanout_texture2d(
         &mut self,

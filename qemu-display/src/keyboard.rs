@@ -1,6 +1,6 @@
 use enumflags2::{bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
-use zbus::{dbus_proxy, zvariant::Type};
+use zbus::zvariant::Type;
 
 #[bitflags]
 #[repr(u32)]
@@ -11,7 +11,7 @@ pub enum KeyboardModifiers {
     Caps = 0x4,
 }
 
-#[dbus_proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Keyboard")]
+#[zbus::proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Keyboard")]
 pub trait Keyboard {
     /// Press method
     fn press(&self, keycode: u32) -> zbus::Result<()>;
@@ -19,6 +19,6 @@ pub trait Keyboard {
     /// Release method
     fn release(&self, keycode: u32) -> zbus::Result<()>;
 
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn modifiers(&self) -> zbus::Result<BitFlags<KeyboardModifiers>>;
 }

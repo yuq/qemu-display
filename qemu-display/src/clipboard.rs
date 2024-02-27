@@ -1,9 +1,6 @@
 use serde_repr::{Deserialize_repr, Serialize_repr};
 use std::convert::TryFrom;
-use zbus::{
-    dbus_interface, dbus_proxy,
-    zvariant::{ObjectPath, Type},
-};
+use zbus::zvariant::{ObjectPath, Type};
 
 use crate::Result;
 
@@ -15,7 +12,7 @@ pub enum ClipboardSelection {
     Secondary,
 }
 
-#[dbus_proxy(
+#[zbus::proxy(
     default_service = "org.qemu",
     default_path = "/org/qemu/Display1/Clipboard",
     interface = "org.qemu.Display1.Clipboard"
@@ -58,7 +55,7 @@ pub(crate) struct ClipboardListener<H: ClipboardHandler> {
     handler: H,
 }
 
-#[dbus_interface(name = "org.qemu.Display1.Clipboard")]
+#[zbus::interface(name = "org.qemu.Display1.Clipboard")]
 impl<H: ClipboardHandler> ClipboardListener<H> {
     async fn register(&mut self) {
         self.handler.register().await;

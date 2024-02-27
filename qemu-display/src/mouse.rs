@@ -1,5 +1,5 @@
 use serde_repr::{Deserialize_repr, Serialize_repr};
-use zbus::{dbus_proxy, zvariant::Type};
+use zbus::zvariant::Type;
 
 #[repr(u32)]
 #[derive(Deserialize_repr, Serialize_repr, Type, Debug, Hash, PartialEq, Eq, Clone, Copy)]
@@ -13,7 +13,7 @@ pub enum MouseButton {
     Extra,
 }
 
-#[dbus_proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Mouse")]
+#[zbus::proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Mouse")]
 pub trait Mouse {
     /// Press method
     fn press(&self, button: MouseButton) -> zbus::Result<()>;
@@ -27,6 +27,6 @@ pub trait Mouse {
     /// RelMotion method
     fn rel_motion(&self, dx: i32, dy: i32) -> zbus::Result<()>;
 
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn is_absolute(&self) -> zbus::Result<bool>;
 }

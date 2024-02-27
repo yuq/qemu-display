@@ -13,10 +13,8 @@ resolver = "2"
 [workspace.dependencies]
 qemu-display = { path = "qemu-display", version = "0.1" }
 keycodemap = { path = "keycodemap", version = "0.1" }
-zbus = "4"
+zbus = { version = "4", features = ["p2p"] }
 
 [patch.crates-io]
-zbus = { git = "https://github.com/dbus2/zbus.git" }
-zvariant = { git = "https://github.com/dbus2/zbus.git" }
 vnc = { git = "https://github.com/elmarco/rust-vnc", branch = "server" }
 rdw4 = { git = "https://gitlab.gnome.org/malureau/rdw.git" }
