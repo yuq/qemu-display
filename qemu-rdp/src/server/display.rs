@@ -1,23 +1,45 @@
 use anyhow::Result;
-use ironrdp::connector::DesktopSize;
+use ironrdp::{connector::DesktopSize, server::RdpServerDisplayUpdates};
 use qemu_display::{zbus, Console, ConsoleListenerHandler, Cursor, MouseSet, Scanout, Update};
 
 use ironrdp::server::{BitmapUpdate, DisplayUpdate, PixelFormat, PixelOrder, RdpServerDisplay};
 
+use crate::cast;
+
 pub struct DisplayHandler {
     console: Console,
+}
+
+struct DisplayUpdates {
     receiver: tokio::sync::mpsc::Receiver<DisplayUpdate>,
 }
 
 impl DisplayHandler {
     pub async fn connect(dbus: zbus::Connection) -> Result<Self> {
-        let (sender, receiver) = tokio::sync::mpsc::channel::<DisplayUpdate>(32);
-        let listener = Listener::new(sender);
-
         let console = Console::new(&dbus, 0).await?;
-        console.register_listener(listener).await?;
 
-        Ok(Self { console, receiver })
+        Ok(Self { console })
+    }
+
+    async fn listen(&self) -> Result<DisplayUpdates> {
+        let (sender, receiver) = tokio::sync::mpsc::channel::<DisplayUpdate>(32);
+        let (width, height) = (
+            self.console.width().await? as _,
+            self.console.height().await? as _,
+        );
+        let desktop_size = DesktopSize { width, height };
+        let listener = Listener::new(sender, desktop_size);
+        self.console.unregister_listener();
+        self.console.register_listener(listener).await?;
+
+        Ok(DisplayUpdates { receiver })
+    }
+}
+
+#[async_trait::async_trait]
+impl RdpServerDisplayUpdates for DisplayUpdates {
+    async fn next_update(&mut self) -> Option<DisplayUpdate> {
+        self.receiver.recv().await
     }
 }
 
@@ -29,8 +51,8 @@ impl RdpServerDisplay for DisplayHandler {
         DesktopSize { height, width }
     }
 
-    async fn get_update(&mut self) -> Option<DisplayUpdate> {
-        self.receiver.recv().await
+    async fn updates(&mut self) -> Result<Box<dyn RdpServerDisplayUpdates>> {
+        Ok(Box::new(self.listen().await?))
     }
 }
 
@@ -39,7 +61,7 @@ struct Listener {
 }
 
 impl Listener {
-    fn new(sender: tokio::sync::mpsc::Sender<DisplayUpdate>) -> Self {
+    fn new(sender: tokio::sync::mpsc::Sender<DisplayUpdate>, _desktop_size: DesktopSize) -> Self {
         Self { sender }
     }
 
@@ -58,11 +80,13 @@ impl ConsoleListenerHandler for Listener {
             _ => PixelFormat::RgbA32,
         };
 
+        let width: u16 = cast!(scanout.width);
+        let height: u16 = cast!(scanout.height);
         let bitmap = DisplayUpdate::Bitmap(BitmapUpdate {
             top: 0,
             left: 0,
-            width: scanout.width,
-            height: scanout.height,
+            width: width.try_into().unwrap(),
+            height: height.try_into().unwrap(),
             format,
             order: PixelOrder::TopToBottom,
             data: scanout.data,
@@ -77,12 +101,14 @@ impl ConsoleListenerHandler for Listener {
             _ => PixelFormat::RgbA32,
         };
 
+        let width: u16 = cast!(update.w);
+        let height: u16 = cast!(update.h);
         let bitmap = DisplayUpdate::Bitmap(BitmapUpdate {
             // TODO: fix scary conversion
-            top: update.y as u32,
-            left: update.x as u32,
-            width: update.w as u32,
-            height: update.h as u32,
+            top: cast!(update.y),
+            left: cast!(update.x),
+            width: width.try_into().unwrap(),
+            height: height.try_into().unwrap(),
             format,
             order: PixelOrder::TopToBottom,
             data: update.data,

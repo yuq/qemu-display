@@ -1,74 +1,88 @@
-use qemu_display::{zbus, Console, KeyboardProxy, MouseButton, MouseProxy};
-
 use ironrdp::server::{KeyboardEvent, MouseEvent, RdpServerInputHandler};
+use qemu_display::{zbus, Console, MouseButton};
+use tokio::{
+    sync::mpsc::{Receiver, Sender},
+    task,
+};
 
-pub struct InputHandler<'a> {
-    pos: (u16, u16),
-    mouse: MouseProxy<'a>,
-    keyboard: KeyboardProxy<'a>,
+use crate::cast;
+
+pub struct InputHandler {
+    tx: Sender<InputEvent>,
+    _task: task::JoinHandle<()>,
 }
 
-#[async_trait::async_trait]
-impl<'a> RdpServerInputHandler for InputHandler<'a> {
-    async fn keyboard(&mut self, event: KeyboardEvent) {
-        let result = match event {
-            KeyboardEvent::Pressed { code, .. } => self.keyboard.press(code as u32).await,
-            KeyboardEvent::Released { code, .. } => self.keyboard.release(code as u32).await,
-            other => {
-                eprintln!("unhandled keyboard event: {:?}", other);
-                Ok(())
-            }
-        };
+#[derive(Debug)]
+enum InputEvent {
+    Keyboard(KeyboardEvent),
+    Mouse(MouseEvent),
+}
 
-        if let Err(e) = result {
+impl RdpServerInputHandler for InputHandler {
+    fn keyboard(&mut self, event: KeyboardEvent) {
+        tracing::debug!(?event);
+        if let Err(e) = self.tx.try_send(InputEvent::Keyboard(event)) {
             eprintln!("keyboard error: {:?}", e);
         }
     }
 
-    async fn mouse(&mut self, event: MouseEvent) {
-        let result = match event {
-            MouseEvent::Move { x, y } => self.mouse_move(x, y).await,
-            MouseEvent::RightPressed => self.mouse.press(MouseButton::Right).await,
-            MouseEvent::RightReleased => self.mouse.release(MouseButton::Right).await,
-            MouseEvent::LeftPressed => self.mouse.press(MouseButton::Left).await,
-            MouseEvent::LeftReleased => self.mouse.release(MouseButton::Left).await,
-            MouseEvent::VerticalScroll { value } => {
-                let motion = if value > 0 {
-                    MouseButton::WheelUp
-                } else {
-                    MouseButton::WheelDown
-                };
-
-                self.mouse.press(motion).await
-            }
-        };
-
-        if let Err(e) = result {
+    fn mouse(&mut self, event: MouseEvent) {
+        tracing::debug!(?event);
+        if let Err(e) = self.tx.try_send(InputEvent::Mouse(event)) {
             eprintln!("keyboard error: {:?}", e);
         }
     }
 }
 
-impl<'a> InputHandler<'a> {
-    pub async fn connect(dbus: zbus::Connection) -> anyhow::Result<InputHandler<'a>> {
+async fn input_receive_task(mut rx: Receiver<InputEvent>, console: Console) {
+    loop {
+        let res = match rx.recv().await {
+            Some(InputEvent::Keyboard(ev)) => match ev {
+                KeyboardEvent::Pressed { code, .. } => console.keyboard.press(code as u32).await,
+                KeyboardEvent::Released { code, .. } => console.keyboard.release(code as u32).await,
+                other => {
+                    eprintln!("unhandled keyboard event: {:?}", other);
+                    Ok(())
+                }
+            },
+            Some(InputEvent::Mouse(ev)) => match ev {
+                MouseEvent::Move { x, y } => {
+                    tracing::debug!(?x, ?y);
+                    console.mouse.set_abs_position(cast!(x), cast!(y)).await
+                }
+                MouseEvent::RightPressed => console.mouse.press(MouseButton::Right).await,
+                MouseEvent::RightReleased => console.mouse.release(MouseButton::Right).await,
+                MouseEvent::LeftPressed => console.mouse.press(MouseButton::Left).await,
+                MouseEvent::LeftReleased => console.mouse.release(MouseButton::Left).await,
+                MouseEvent::VerticalScroll { value } => {
+                    let motion = if value > 0 {
+                        MouseButton::WheelUp
+                    } else {
+                        MouseButton::WheelDown
+                    };
+
+                    console.mouse.press(motion).await
+                }
+                other => {
+                    eprintln!("unhandled input event: {:?}", other);
+                    Ok(())
+                }
+            },
+            None => break,
+        };
+
+        if let Err(e) = res {
+            eprintln!("input handling error: {:?}", e);
+        }
+    }
+}
+
+impl InputHandler {
+    pub async fn connect(dbus: zbus::Connection) -> anyhow::Result<InputHandler> {
         let console = Console::new(&dbus, 0).await?;
+        let (tx, rx) = tokio::sync::mpsc::channel(30);
+        let _task = task::spawn(async move { input_receive_task(rx, console).await });
 
-        Ok(Self {
-            pos: (0, 0),
-            mouse: console.mouse,
-            keyboard: console.keyboard,
-        })
-    }
-
-    pub async fn mouse_move(&mut self, x: u16, y: u16) -> Result<(), zbus::Error> {
-        if self.mouse.is_absolute().await.unwrap_or(true) {
-            self.mouse.set_abs_position(x.into(), y.into()).await
-        } else {
-            let (dx, dy) = (x as i32 - self.pos.0 as i32, y as i32 - self.pos.1 as i32);
-            let res = self.mouse.rel_motion(dx, dy).await;
-            self.pos = (x, y);
-
-            res
-        }
+        Ok(Self { _task, tx })
     }
 }
