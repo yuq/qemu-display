@@ -2,7 +2,7 @@ use futures::stream::{self, StreamExt};
 use std::{
     collections::HashMap,
     convert::{TryFrom, TryInto},
-    sync::Arc,
+    rc::Rc,
 };
 use zbus::{
     fdo,
@@ -31,7 +31,7 @@ struct Inner<'d> {
 
 #[derive(Clone)]
 pub struct Display<'d> {
-    inner: Arc<Inner<'d>>,
+    inner: Rc<Inner<'d>>,
 }
 
 impl<'d> Display<'d> {
@@ -113,7 +113,7 @@ impl<'d> Display<'d> {
         };
 
         Ok(Self {
-            inner: Arc::new(inner),
+            inner: Rc::new(inner),
         })
     }
 
