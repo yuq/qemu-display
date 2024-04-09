@@ -140,6 +140,7 @@ impl<'d> Display<'d> {
         {
             // FIXME: no ancillary fd API at this point
             // https://github.com/rust-lang/rust/issues/76915
+            let _ = p0;
             qmp.execute(&qmp::getfd {
                 fdname: "fdname".into(),
             })?;
