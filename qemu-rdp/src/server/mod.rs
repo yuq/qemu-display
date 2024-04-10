@@ -51,11 +51,14 @@ fn acceptor(cert_path: &str, key_path: &str) -> Result<TlsAcceptor, Error> {
     let cert = certs(&mut BufReader::new(File::open(cert_path)?))?[0].clone();
     let key = pkcs8_private_keys(&mut BufReader::new(File::open(key_path)?))?[0].clone();
 
-    let server_config = ServerConfig::builder()
+    let mut server_config = ServerConfig::builder()
         .with_safe_defaults()
         .with_no_client_auth()
         .with_single_cert(vec![rustls::Certificate(cert)], rustls::PrivateKey(key))
         .expect("bad certificate/key");
+
+    // This adds support for the SSLKEYLOGFILE env variable (https://wiki.wireshark.org/TLS#using-the-pre-master-secret)
+    server_config.key_log = Arc::new(rustls::KeyLogFile::new());
 
     Ok(TlsAcceptor::from(Arc::new(server_config)))
 }
