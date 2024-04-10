@@ -104,6 +104,7 @@ impl Console {
         Ok(self.proxy.height().await?)
     }
 
+    #[tracing::instrument(skip(self, handler))]
     pub async fn register_listener<H: ConsoleListenerHandler>(&self, handler: H) -> Result<()> {
         let (p0, p1) = UnixStream::pair()?;
         let p0 = util::prepare_uds_pass(

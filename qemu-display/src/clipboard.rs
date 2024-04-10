@@ -86,7 +86,7 @@ impl<H: ClipboardHandler> ClipboardListener<H> {
 }
 
 #[derive(derivative::Derivative)]
-#[derivative(Debug)]
+#[derivative(Clone, Debug)]
 pub struct Clipboard {
     #[derivative(Debug = "ignore")]
     pub proxy: ClipboardProxy<'static>,
