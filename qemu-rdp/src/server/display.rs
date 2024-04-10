@@ -1,8 +1,10 @@
 use anyhow::Result;
-use ironrdp::{connector::DesktopSize, server::RdpServerDisplayUpdates};
 use qemu_display::{zbus, Console, ConsoleListenerHandler, Cursor, MouseSet, Scanout, Update};
 
-use ironrdp::server::{BitmapUpdate, DisplayUpdate, PixelOrder, RdpServerDisplay};
+use ironrdp::connector::DesktopSize;
+use ironrdp::server::{
+    BitmapUpdate, DisplayUpdate, PixelOrder, RGBAPointer, RdpServerDisplay, RdpServerDisplayUpdates,
+};
 
 use crate::{cast, util::PixmanFormat};
 
@@ -59,6 +61,7 @@ impl RdpServerDisplay for DisplayHandler {
 struct Listener {
     sender: tokio::sync::mpsc::Sender<DisplayUpdate>,
     _desktop_size: DesktopSize,
+    cursor_hot: (i32, i32),
 }
 
 impl Listener {
@@ -66,6 +69,7 @@ impl Listener {
         Self {
             sender,
             _desktop_size,
+            cursor_hot: (0, 0),
         }
     }
 
@@ -140,13 +144,58 @@ impl ConsoleListenerHandler for Listener {
         tracing::debug!("disable");
     }
 
+    async fn mouse_set(&mut self, set: MouseSet) {
+        tracing::debug!(?set);
+
+        // FIXME: this create weird effects on the client
+        //
+        // self.send(DisplayUpdate::PointerPosition(ironrdp_pdu::PointerPositionAttribute {
+        //     x: cast!(set.x + self.cursor_hot.0),
+        //     y: cast!(set.y + self.cursor_hot.1),
+        // }))
+        // .await;
+        //
+
+        if set.on == 0 {
+            self.send(DisplayUpdate::HidePointer).await;
+        }
+    }
+
+    async fn cursor_define(&mut self, cursor: Cursor) {
+        tracing::debug!(?cursor);
+        self.cursor_hot = (cursor.hot_x, cursor.hot_y);
+
+        fn flip_vertically(image: Vec<u8>, width: usize, height: usize) -> Vec<u8> {
+            let row_length = width * 4; // 4 bytes per pixel
+            let mut flipped_image = vec![0; image.len()]; // Initialize a vector for the flipped image
+
+            for y in 0..height {
+                let source_row_start = y * row_length;
+                let dest_row_start = (height - 1 - y) * row_length;
+
+                // Copy the whole row from the source position to the destination position
+                flipped_image[dest_row_start..dest_row_start + row_length]
+                    .copy_from_slice(&image[source_row_start..source_row_start + row_length]);
+            }
+
+            flipped_image
+        }
+
+        let data = flip_vertically(cursor.data, cast!(cursor.width), cast!(cursor.height));
+
+        self.send(DisplayUpdate::RGBAPointer(RGBAPointer {
+            width: cast!(cursor.width),
+            height: cast!(cursor.height),
+            hot_x: cast!(cursor.hot_x),
+            hot_y: cast!(cursor.hot_y),
+            data,
+        }))
+        .await;
+    }
+
     fn disconnected(&mut self) {
         tracing::debug!("console listener disconnected");
     }
-
-    async fn mouse_set(&mut self, _set: MouseSet) {}
-
-    async fn cursor_define(&mut self, _cursor: Cursor) {}
 
     fn interfaces(&self) -> Vec<String> {
         vec![]

@@ -1,5 +1,6 @@
-use ironrdp::server::{KeyboardEvent, MouseEvent, RdpServerInputHandler};
 use qemu_display::{zbus, Console, MouseButton};
+
+use ironrdp::server::{KeyboardEvent, MouseEvent, RdpServerInputHandler};
 use tokio::{
     sync::mpsc::{Receiver, Sender},
     task,
@@ -29,7 +30,7 @@ impl RdpServerInputHandler for InputHandler {
     fn mouse(&mut self, event: MouseEvent) {
         tracing::debug!(?event);
         if let Err(e) = self.tx.try_send(InputEvent::Mouse(event)) {
-            eprintln!("keyboard error: {:?}", e);
+            eprintln!("mouse error: {:?}", e);
         }
     }
 }
