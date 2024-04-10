@@ -2,9 +2,9 @@ use anyhow::Result;
 use ironrdp::{connector::DesktopSize, server::RdpServerDisplayUpdates};
 use qemu_display::{zbus, Console, ConsoleListenerHandler, Cursor, MouseSet, Scanout, Update};
 
-use ironrdp::server::{BitmapUpdate, DisplayUpdate, PixelFormat, PixelOrder, RdpServerDisplay};
+use ironrdp::server::{BitmapUpdate, DisplayUpdate, PixelOrder, RdpServerDisplay};
 
-use crate::cast;
+use crate::{cast, util::PixmanFormat};
 
 pub struct DisplayHandler {
     console: Console,
@@ -58,11 +58,15 @@ impl RdpServerDisplay for DisplayHandler {
 
 struct Listener {
     sender: tokio::sync::mpsc::Sender<DisplayUpdate>,
+    _desktop_size: DesktopSize,
 }
 
 impl Listener {
     fn new(sender: tokio::sync::mpsc::Sender<DisplayUpdate>, _desktop_size: DesktopSize) -> Self {
-        Self { sender }
+        Self {
+            sender,
+            _desktop_size,
+        }
     }
 
     async fn send(&mut self, update: DisplayUpdate) {
@@ -75,40 +79,45 @@ impl Listener {
 #[async_trait::async_trait]
 impl ConsoleListenerHandler for Listener {
     async fn scanout(&mut self, scanout: Scanout) {
-        let format = match scanout.format {
-            537_004_168 => PixelFormat::BgrA32,
-            _ => PixelFormat::RgbA32,
+        let desktop_size = DesktopSize {
+            width: cast!(scanout.width),
+            height: cast!(scanout.height),
         };
 
-        let width: u16 = cast!(scanout.width);
-        let height: u16 = cast!(scanout.height);
-        let bitmap = DisplayUpdate::Bitmap(BitmapUpdate {
-            top: 0,
-            left: 0,
-            width: width.try_into().unwrap(),
-            height: height.try_into().unwrap(),
-            format,
-            order: PixelOrder::TopToBottom,
-            data: scanout.data,
-        });
+        tracing::debug!(?desktop_size);
 
-        self.send(bitmap).await;
+        // if desktop_size != self.desktop_size {
+        //     self.desktop_size = desktop_size;
+        //     self.send(DisplayUpdate::Resize(desktop_size)).await;
+        // }
+
+        self.update(Update {
+            x: 0,
+            y: 0,
+            w: cast!(scanout.width),
+            h: cast!(scanout.height),
+            stride: scanout.stride,
+            format: scanout.format,
+            data: scanout.data,
+        })
+        .await
     }
 
     async fn update(&mut self, update: Update) {
-        let format = match update.format {
-            537_004_168 => PixelFormat::BgrA32,
-            _ => PixelFormat::RgbA32,
+        let Ok(format) = PixmanFormat(update.format).try_into() else {
+            println!("Unhandled format {}", update.format);
+            return;
         };
 
         let width: u16 = cast!(update.w);
         let height: u16 = cast!(update.h);
+
         let bitmap = DisplayUpdate::Bitmap(BitmapUpdate {
             // TODO: fix scary conversion
-            top: cast!(update.y),
             left: cast!(update.x),
-            width: width.try_into().unwrap(),
-            height: height.try_into().unwrap(),
+            top: cast!(update.y),
+            width: cast!(width),
+            height: cast!(height),
             format,
             order: PixelOrder::TopToBottom,
             data: update.data,
@@ -118,15 +127,27 @@ impl ConsoleListenerHandler for Listener {
     }
 
     #[cfg(unix)]
-    async fn scanout_dmabuf(&mut self, _scanout: qemu_display::ScanoutDMABUF) {}
+    async fn scanout_dmabuf(&mut self, scanout: qemu_display::ScanoutDMABUF) {
+        tracing::debug!(?scanout);
+    }
 
     #[cfg(unix)]
-    async fn update_dmabuf(&mut self, _update: qemu_display::UpdateDMABUF) {}
+    async fn update_dmabuf(&mut self, update: qemu_display::UpdateDMABUF) {
+        tracing::debug!(?update);
+    }
 
-    async fn disable(&mut self) {}
+    async fn disable(&mut self) {
+        tracing::debug!("disable");
+    }
+
+    fn disconnected(&mut self) {
+        tracing::debug!("console listener disconnected");
+    }
+
     async fn mouse_set(&mut self, _set: MouseSet) {}
+
     async fn cursor_define(&mut self, _cursor: Cursor) {}
-    fn disconnected(&mut self) {}
+
     fn interfaces(&self) -> Vec<String> {
         vec![]
     }
