@@ -156,17 +156,6 @@ dependencies = [
 
 [[package]]
 name = "async-broadcast"
-version = "0.3.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90622698a1218e0b2fb846c97b5f19a0831f6baddee73d9454156365ccfa473b"
-dependencies = [
- "easy-parallel",
- "event-listener 2.5.3",
- "futures-core",
-]
-
-[[package]]
-name = "async-broadcast"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "258b52a1aa741b9f09783b2d86cf0aeeb617bbf847f6933340a39644227acbdb"
@@ -1038,12 +1027,6 @@ name = "downcast-rs"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75b325c5dbd37f80359721ad39aca5a29fb04c89279657cffdda8736d0c0b9d2"
-
-[[package]]
-name = "easy-parallel"
-version = "3.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2afbb9b0aef60e4f0d2b18129b6c0dff035a6f7dbbd17c2f38c1432102ee223c"
 
 [[package]]
 name = "ecdsa"
@@ -3044,6 +3027,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "pixman-sys"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a1a0483e89e81d7915defe83c51f23f6800594d64f6f4a21253ce87fd8444ada"
+
+[[package]]
 name = "pkcs1"
 version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3250,8 +3239,8 @@ dependencies = [
 name = "qemu-display"
 version = "0.1.0"
 dependencies = [
- "async-broadcast 0.3.4",
- "async-lock 2.8.0",
+ "async-broadcast",
+ "async-lock 3.3.0",
  "async-std",
  "async-trait",
  "base64 0.13.1",
@@ -3261,12 +3250,14 @@ dependencies = [
  "futures",
  "futures-util",
  "libc",
- "log 0.4.21",
  "once_cell",
+ "pixman-sys",
  "qapi",
+ "rand",
  "serde",
  "serde_bytes",
  "serde_repr",
+ "tracing",
  "tracing-subscriber",
  "uds_windows",
  "usbredirhost",
@@ -5118,7 +5109,7 @@ version = "4.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c9ff46f2a25abd690ed072054733e0bc3157e3d4c45f41bd183dce09c2ff8ab9"
 dependencies = [
- "async-broadcast 0.7.0",
+ "async-broadcast",
  "async-executor",
  "async-fs",
  "async-io 2.3.2",
