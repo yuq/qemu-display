@@ -1,3 +1,4 @@
+mod clipboard;
 mod display;
 mod input;
 
@@ -12,6 +13,7 @@ use ironrdp::server::RdpServer;
 
 use crate::args::ServerArgs;
 
+use clipboard::ClipboardHandler;
 use display::DisplayHandler;
 use input::InputHandler;
 
@@ -35,12 +37,14 @@ impl Server {
 
         let handler = InputHandler::connect(self.dbus.clone()).await?;
         let display = DisplayHandler::connect(self.dbus.clone()).await?;
+        let clipboard = ClipboardHandler::connect(self.dbus.clone()).await?;
 
         let mut server = RdpServer::builder()
             .with_addr((self.args.address, self.args.port))
             .with_tls(tls.unwrap())
             .with_input_handler(handler)
             .with_display_handler(display)
+            .with_cliprdr_factory(Some(Box::new(clipboard)))
             .build();
 
         server.run().await

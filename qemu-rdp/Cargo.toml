@@ -20,4 +20,4 @@ tokio-rustls = "0.24"
 anyhow = "1.0"
 clap = { version = "4.2", features = ["derive", "cargo"] }
 async-trait = "0.1"
-ironrdp = { git = "https://github.com/Devolutions/IronRDP", features = ["server"] }
+ironrdp = { git = "https://github.com/Devolutions/IronRDP", features = ["server", "svc", "cliprdr"] }

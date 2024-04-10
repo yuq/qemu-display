@@ -2115,10 +2115,12 @@ name = "ironrdp"
 version = "0.5.0"
 source = "git+https://github.com/Devolutions/IronRDP#ef2055235a3bb929a99e1f5109f2800d68b089b1"
 dependencies = [
+ "ironrdp-cliprdr",
  "ironrdp-connector",
  "ironrdp-pdu",
  "ironrdp-server",
  "ironrdp-session",
+ "ironrdp-svc",
 ]
 
 [[package]]
