@@ -9,15 +9,15 @@ edition = "2021"
 [dependencies]
 qemu-display = { path = "../qemu-display" }
 tracing.workspace = true
-tracing-subscriber = { version = "0.3.16", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 keycodemap = { path = "../keycodemap" }
-bytes = "1.4"
+bytes = "1.6"
 pixman-sys = "0.1.0"
 rustls = { version = "0.21" }
 rustls-pemfile = "1.0"
-tokio = { version = "1.28", features = ["full"] }
+tokio = { version = "1.37", features = ["full"] }
 tokio-rustls = "0.24"
 anyhow = "1.0"
-clap = { version = "4.2", features = ["derive", "cargo"] }
+clap = { version = "4.5", features = ["derive", "cargo"] }
 async-trait = "0.1"
 ironrdp = { git = "https://github.com/Devolutions/IronRDP", features = ["server", "svc", "cliprdr"] }
