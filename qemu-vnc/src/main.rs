@@ -464,7 +464,8 @@ fn image_from_vec(format: u32, width: u32, height: u32, stride: u32, data: Vec<u
     };
     samples
         .try_into_buffer::<image::Bgra<u8>>()
-        .or_else::<&str, _>(|(_err, samples)| {
+        .or_else::<&str, _>(|(err, samples)| {
+            eprintln!("failed to convert image: {}", err);
             let view = samples.as_view::<image::Bgra<u8>>().unwrap();
             let mut img = BgraImage::new(width, height);
             img.copy_from(&view, 0, 0).unwrap();
