@@ -207,7 +207,7 @@ async fn rdp_clipboard_receive_task(mut rx: Receiver<ClipboardEvent>, cb: Clipbo
             Some(ClipboardEvent::Register) => {
                 debug!("Register -> dbus");
 
-                clipboard.proxy.register().await
+                clipboard.register(cb.clone()).await
             }
             Some(ClipboardEvent::Grab {
                 selection,
@@ -228,12 +228,16 @@ async fn rdp_clipboard_receive_task(mut rx: Receiver<ClipboardEvent>, cb: Clipbo
 
                 let mimes: Vec<&str> = mimes.iter().map(AsRef::as_ref).collect();
 
-                clipboard.proxy.grab(selection, serial, &mimes).await
+                clipboard
+                    .proxy
+                    .grab(selection, serial, &mimes)
+                    .await
+                    .map_err(Into::into)
             }
             Some(ClipboardEvent::Release { selection }) => {
                 debug!("Release -> dbus");
 
-                clipboard.proxy.release(selection).await
+                clipboard.proxy.release(selection).await.map_err(Into::into)
             }
             Some(ClipboardEvent::Request { selection, request }) => {
                 debug!(?request, "Request -> dbus");
@@ -278,7 +282,7 @@ async fn rdp_clipboard_receive_task(mut rx: Receiver<ClipboardEvent>, cb: Clipbo
         };
 
         if let Err(e) = res {
-            error!(?e, "input handling error");
+            error!(?e, "clipboard task handling error");
         }
     }
 }
