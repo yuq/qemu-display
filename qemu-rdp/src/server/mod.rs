@@ -1,6 +1,7 @@
 mod clipboard;
 mod display;
 mod input;
+mod sound;
 
 use anyhow::{anyhow, Context, Error};
 use ironrdp::server::tokio_rustls::{rustls, TlsAcceptor};
@@ -8,6 +9,7 @@ use ironrdp::server::tokio_rustls::{rustls, TlsAcceptor};
 use qemu_display::zbus;
 use rustls_pemfile::{certs, pkcs8_private_keys};
 use std::{fs::File, io::BufReader, sync::Arc};
+use tracing::debug;
 
 use ironrdp::server::RdpServer;
 
@@ -16,6 +18,7 @@ use crate::args::ServerArgs;
 use clipboard::ClipboardHandler;
 use display::DisplayHandler;
 use input::InputHandler;
+use sound::SoundHandler;
 
 pub struct Server {
     dbus: zbus::Connection,
@@ -39,6 +42,13 @@ impl Server {
         let handler = InputHandler::connect(self.dbus.clone()).await?;
         let display = DisplayHandler::connect(self.dbus.clone()).await?;
         let clipboard = ClipboardHandler::connect(self.dbus.clone()).await?;
+        let sound = match SoundHandler::connect::<()>(self.dbus.clone(), None).await {
+            Ok(h) => Some(h),
+            Err(e) => {
+                debug!("Can't connect audio: {}", e);
+                None
+            }
+        };
 
         let mut server = RdpServer::builder()
             .with_addr((self.args.address, self.args.port))
@@ -46,6 +56,7 @@ impl Server {
             .with_input_handler(handler)
             .with_display_handler(display)
             .with_cliprdr_factory(Some(Box::new(clipboard)))
+            .with_sound_factory(sound.map(|h| Box::new(h) as _))
             .build();
 
         server.run().await

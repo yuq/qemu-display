@@ -2215,6 +2215,7 @@ dependencies = [
  "ironrdp-cliprdr",
  "ironrdp-connector",
  "ironrdp-pdu",
+ "ironrdp-rdpsnd",
  "ironrdp-server",
  "ironrdp-session",
  "ironrdp-svc",
