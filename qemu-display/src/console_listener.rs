@@ -159,7 +159,7 @@ pub(crate) struct ConsoleListener<H: ConsoleListenerHandler> {
     handler: H,
 }
 
-#[zbus::interface(name = "org.qemu.Display1.Listener")]
+#[zbus::interface(name = "org.qemu.Display1.Listener", spawn = false)]
 impl<H: ConsoleListenerHandler> ConsoleListener<H> {
     async fn scanout(
         &mut self,

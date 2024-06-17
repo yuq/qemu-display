@@ -93,7 +93,7 @@ struct AudioOutListener<H: AudioOutHandler> {
     handler: H,
 }
 
-#[zbus::interface(name = "org.qemu.Display1.AudioOutListener")]
+#[zbus::interface(name = "org.qemu.Display1.AudioOutListener", spawn = false)]
 impl<H: AudioOutHandler> AudioOutListener<H> {
     /// Init method
     async fn init(
