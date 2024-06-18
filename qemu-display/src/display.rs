@@ -216,6 +216,7 @@ impl<'d> Display<'d> {
         Ok(Some(
             Audio::new(
                 &self.inner.conn,
+                Some(self.inner.proxy.inner().destination().to_owned()),
                 #[cfg(windows)]
                 self.peer_pid(),
             )

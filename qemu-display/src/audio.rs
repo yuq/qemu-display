@@ -1,14 +1,15 @@
 #[cfg(windows)]
 use crate::win32::Fd;
+use std::convert::TryInto;
 #[cfg(unix)]
 use std::os::unix::net::UnixStream;
 #[cfg(windows)]
 use uds_windows::UnixStream;
 #[cfg(unix)]
 use zbus::zvariant::Fd;
-use zbus::Connection;
+use zbus::{names::BusName, Connection};
 
-use crate::{util, Result};
+use crate::{util, Error, Result};
 
 #[derive(Debug)]
 pub struct PCMInfo {
@@ -234,8 +235,23 @@ impl<H: AudioInHandler> AudioInListener<H> {
 }
 
 impl Audio {
-    pub async fn new(conn: &zbus::Connection, #[cfg(windows)] peer_pid: u32) -> Result<Self> {
-        let proxy = AudioProxy::new(conn).await?;
+    pub async fn new<D>(
+        conn: &zbus::Connection,
+        dest: Option<D>,
+        #[cfg(windows)] peer_pid: u32,
+    ) -> Result<Self>
+    where
+        D: TryInto<BusName<'static>>,
+        D::Error: Into<Error>,
+    {
+        let builder = AudioProxy::builder(conn);
+        let builder = if let Some(dest) = dest {
+            let dest = dest.try_into().map_err(Into::into)?;
+            builder.destination(dest)?
+        } else {
+            builder
+        };
+        let proxy = builder.build().await?;
         Ok(Self {
             proxy,
             in_listener: None,
