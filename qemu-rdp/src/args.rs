@@ -1,5 +1,4 @@
-use clap::clap_derive::ValueEnum;
-use clap::Parser;
+use clap::{clap_derive::ValueEnum, Parser};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
 pub enum SecurityProtocol {

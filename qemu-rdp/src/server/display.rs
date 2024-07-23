@@ -1,9 +1,12 @@
 use anyhow::Result;
 use qemu_display::{zbus, Console, ConsoleListenerHandler, Cursor, MouseSet, Scanout, Update};
 
-use ironrdp::connector::DesktopSize;
-use ironrdp::server::{
-    BitmapUpdate, DisplayUpdate, PixelOrder, RGBAPointer, RdpServerDisplay, RdpServerDisplayUpdates,
+use ironrdp::{
+    connector::DesktopSize,
+    server::{
+        BitmapUpdate, DisplayUpdate, PixelOrder, RGBAPointer, RdpServerDisplay,
+        RdpServerDisplayUpdates,
+    },
 };
 
 use crate::{cast, util::PixmanFormat};
