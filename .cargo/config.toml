@@ -1,2 +1,6 @@
 [alias]
 xtask = "run --package xtask --"
+
+[patch."https://github.com/Devolutions/IronRDP"]
+ironrdp = { path = "../IronRDP/crates/ironrdp" }
+

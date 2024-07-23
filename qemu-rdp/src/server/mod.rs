@@ -2,12 +2,12 @@ mod clipboard;
 mod display;
 mod input;
 
-use anyhow::Error;
+use anyhow::{anyhow, Context, Error};
+use ironrdp::server::tokio_rustls::{rustls, TlsAcceptor};
+
 use qemu_display::zbus;
-use rustls::ServerConfig;
 use rustls_pemfile::{certs, pkcs8_private_keys};
 use std::{fs::File, io::BufReader, sync::Arc};
-use tokio_rustls::TlsAcceptor;
 
 use ironrdp::server::RdpServer;
 
@@ -33,7 +33,8 @@ impl Server {
             .cert
             .as_ref()
             .zip(self.args.key.as_ref())
-            .map(|(cert, key)| acceptor(cert, key).unwrap());
+            .map(|(cert, key)| acceptor(cert, key).unwrap())
+            .ok_or_else(|| anyhow!("Failed to setup TLS"))?;
 
         let handler = InputHandler::connect(self.dbus.clone()).await?;
         let display = DisplayHandler::connect(self.dbus.clone()).await?;
@@ -41,7 +42,7 @@ impl Server {
 
         let mut server = RdpServer::builder()
             .with_addr((self.args.address, self.args.port))
-            .with_tls(tls.unwrap())
+            .with_tls(tls)
             .with_input_handler(handler)
             .with_display_handler(display)
             .with_cliprdr_factory(Some(Box::new(clipboard)))
@@ -52,13 +53,17 @@ impl Server {
 }
 
 fn acceptor(cert_path: &str, key_path: &str) -> Result<TlsAcceptor, Error> {
-    let cert = certs(&mut BufReader::new(File::open(cert_path)?))?[0].clone();
-    let key = pkcs8_private_keys(&mut BufReader::new(File::open(key_path)?))?[0].clone();
+    let cert = certs(&mut BufReader::new(File::open(cert_path)?))
+        .next()
+        .context("no certificate")??;
+    let key = pkcs8_private_keys(&mut BufReader::new(File::open(key_path)?))
+        .next()
+        .context("no private key")?
+        .map(rustls::pki_types::PrivateKeyDer::from)?;
 
-    let mut server_config = ServerConfig::builder()
-        .with_safe_defaults()
+    let mut server_config = rustls::ServerConfig::builder()
         .with_no_client_auth()
-        .with_single_cert(vec![rustls::Certificate(cert)], rustls::PrivateKey(key))
+        .with_single_cert(vec![cert], key)
         .expect("bad certificate/key");
 
     // This adds support for the SSLKEYLOGFILE env variable (https://wiki.wireshark.org/TLS#using-the-pre-master-secret)
