@@ -179,7 +179,8 @@ impl<'d> Display<'d> {
 
             let pid = unix_stream_get_peer_pid(&stream)?;
             let info = duplicate_socket(pid, SOCKET(p0.as_raw_socket() as _))?;
-            let info = base64::encode(info);
+            use base64::prelude::*;
+            let info = BASE64_STANDARD.encode(info);
             qmp.execute(&get_win32_socket {
                 info,
                 fdname: "fdname".into(),

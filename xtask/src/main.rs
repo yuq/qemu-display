@@ -2,7 +2,7 @@ use std::{
     env,
     path::{Path, PathBuf},
 };
-use xshell::{cmd, write_file};
+use xshell::{cmd, Shell};
 
 type DynError = Box<dyn std::error::Error>;
 
@@ -55,10 +55,13 @@ fn codegen() -> Result<(), DynError> {
     ];
     for km in &keymaps {
         let varname = format!("keymap_{}2qnum", km);
-        let out =
-            cmd!("{keymap_gen} code-map --lang rust --varname {varname} {keymaps_csv} {km} qnum")
-                .read()?;
-        write_file(keycodemap_src.join(format!("{}.rs", varname)), out)?;
+        let sh = Shell::new()?;
+        let out = cmd!(
+            sh,
+            "{keymap_gen} code-map --lang rust --varname {varname} {keymaps_csv} {km} qnum"
+        )
+        .read()?;
+        std::fs::write(keycodemap_src.join(format!("{}.rs", varname)), out)?;
     }
     Ok(())
 }

@@ -15,7 +15,9 @@ pub struct ProcessHandle(HANDLE);
 
 impl Drop for ProcessHandle {
     fn drop(&mut self) {
-        unsafe { CloseHandle(self.0) };
+        unsafe {
+            let _ = CloseHandle(self.0);
+        };
     }
 }
 

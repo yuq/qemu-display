@@ -2,7 +2,7 @@
 name = "qemu-display"
 version = "0.1.0"
 authors = ["Marc-André Lureau <marcandre.lureau@redhat.com>"]
-edition = "2018"
+edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -32,11 +32,19 @@ base64 = { version = "0.22", optional = true }
 
 [target.'cfg(windows)'.dependencies]
 uds_windows = "1.1"
-windows = { version = "0.43", features = ["Win32_Networking_WinSock", "Win32_Foundation", "Win32_System_IO", "Win32_System_Threading"] }
+windows = { version = "0.58", features = [
+    "Win32_Networking_WinSock",
+    "Win32_Foundation",
+    "Win32_System_IO",
+    "Win32_System_Threading",
+] }
 
 [target.'cfg(windows)'.dev-dependencies]
 async-std = { version = "1.12", features = ["attributes"] }
-tracing-subscriber = { version = "0.3", features = ["env-filter" , "fmt"], default-features = false }
+tracing-subscriber = { version = "0.3", features = [
+    "env-filter",
+    "fmt",
+], default-features = false }
 
 [dev-dependencies]
 pixman-sys.workspace = true

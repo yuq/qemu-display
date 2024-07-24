@@ -22,5 +22,6 @@ ironrdp = { git = "https://github.com/Devolutions/IronRDP", features = [
     "server",
     "svc",
     "cliprdr",
+    "displaycontrol",
     "rdpsnd"
 ] }

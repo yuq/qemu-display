@@ -10,10 +10,10 @@ edition = "2018"
 qemu-display.workspace = true
 keycodemap.workspace = true
 vnc = "0.4.0"
-clap = { version = "3.2", features = ["derive"] }
+clap = { version = "4.5", features = ["derive"] }
 zbus.workspace = true
 libc = "0.2.155"
-image = "0.23.14"
+image = "0.23"
 derivative = "2.2.0"
-async-io = "1.13.0"
+async-io = "2.3"
 async-trait = "0.1.81"
