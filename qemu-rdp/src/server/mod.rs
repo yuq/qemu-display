@@ -6,7 +6,7 @@ mod sound;
 use anyhow::{anyhow, Context, Error};
 use ironrdp::server::tokio_rustls::{rustls, TlsAcceptor};
 
-use qemu_display::zbus;
+use qemu_display::{zbus, Display};
 use rustls_pemfile::{certs, pkcs8_private_keys};
 use std::{fs::File, io::BufReader, sync::Arc};
 use tracing::debug;
@@ -39,10 +39,12 @@ impl Server {
             .map(|(cert, key)| acceptor(cert, key).unwrap())
             .ok_or_else(|| anyhow!("Failed to setup TLS"))?;
 
-        let handler = InputHandler::connect(self.dbus.clone()).await?;
-        let display = DisplayHandler::connect(self.dbus.clone()).await?;
-        let clipboard = ClipboardHandler::connect(self.dbus.clone()).await?;
-        let sound = match SoundHandler::connect::<()>(self.dbus.clone(), None).await {
+        let dbus_display = Display::new::<()>(&self.dbus, None).await?;
+
+        let handler = InputHandler::connect(&dbus_display).await?;
+        let display = DisplayHandler::connect(&dbus_display).await?;
+        let clipboard = ClipboardHandler::connect(&dbus_display).await?;
+        let sound = match SoundHandler::connect(&dbus_display).await {
             Ok(h) => Some(h),
             Err(e) => {
                 debug!("Can't connect audio: {}", e);

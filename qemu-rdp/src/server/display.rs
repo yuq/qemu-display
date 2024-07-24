@@ -1,5 +1,5 @@
 use anyhow::Result;
-use qemu_display::{zbus, Console, ConsoleListenerHandler, Cursor, MouseSet, Scanout, Update};
+use qemu_display::{Console, ConsoleListenerHandler, Cursor, Display, MouseSet, Scanout, Update};
 
 use ironrdp::{
     connector::DesktopSize,
@@ -20,8 +20,8 @@ struct DisplayUpdates {
 }
 
 impl DisplayHandler {
-    pub async fn connect(dbus: zbus::Connection) -> Result<Self> {
-        let console = Console::new(&dbus, 0).await?;
+    pub async fn connect(display: &Display<'_>) -> Result<Self> {
+        let console = Console::new(display.connection(), 0).await?;
 
         Ok(Self { console })
     }

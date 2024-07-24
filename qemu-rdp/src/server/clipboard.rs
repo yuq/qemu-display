@@ -19,7 +19,7 @@ use ironrdp::{
 };
 use tracing::{debug, error, warn};
 
-use qemu_display::{zbus, Clipboard, ClipboardSelection};
+use qemu_display::{Clipboard, ClipboardSelection, Display};
 use tokio::{
     sync::{
         mpsc::{self, Receiver, Sender},
@@ -335,8 +335,8 @@ impl Inner {
 }
 
 impl ClipboardHandler {
-    pub async fn connect(dbus: zbus::Connection) -> Result<Self> {
-        let clipboard = Clipboard::new(&dbus).await?;
+    pub async fn connect(display: &Display<'_>) -> Result<Self> {
+        let clipboard = Clipboard::new(display.connection()).await?;
         let selection = ClipboardSelection::Clipboard;
         let (tx, rx) = tokio::sync::mpsc::channel(30);
 

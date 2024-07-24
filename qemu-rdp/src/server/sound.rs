@@ -14,7 +14,7 @@ use ironrdp::{
 };
 use tokio::sync::mpsc;
 
-use qemu_display::{zbus, Audio, AudioOutHandler, PCMInfo, Volume};
+use qemu_display::{Audio, AudioOutHandler, Display, PCMInfo, Volume};
 use tracing::{debug, warn};
 
 #[derive(Debug, PartialEq)]
@@ -168,12 +168,9 @@ impl SoundServerFactory for SoundHandler {
 }
 
 impl SoundHandler {
-    pub async fn connect<D>(dbus: zbus::Connection, dest: Option<D>) -> Result<Self>
-    where
-        D: TryInto<zbus::names::BusName<'static>>,
-        D::Error: Into<qemu_display::Error>,
-    {
-        let audio = Audio::new(&dbus, dest).await?;
+    pub async fn connect(display: &Display<'_>) -> Result<Self> {
+        let audio =
+            Audio::new(display.connection(), Some(display.destination().to_owned())).await?;
         let inner = Arc::new(Mutex::new(Inner {
             start_time: Instant::now(),
             state: State::Init,
@@ -182,6 +179,7 @@ impl SoundHandler {
             rdp_started: false,
         }));
 
+        // TODO: register only after connection?
         let handler = DBusHandler {
             inner: inner.clone(),
         };

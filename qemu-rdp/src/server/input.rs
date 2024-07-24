@@ -1,4 +1,4 @@
-use qemu_display::{zbus, Console, MouseButton};
+use qemu_display::{Console, Display, MouseButton};
 
 use ironrdp::server::{KeyboardEvent, MouseEvent, RdpServerInputHandler};
 use tokio::{
@@ -79,8 +79,8 @@ async fn input_receive_task(mut rx: Receiver<InputEvent>, console: Console) {
 }
 
 impl InputHandler {
-    pub async fn connect(dbus: zbus::Connection) -> anyhow::Result<InputHandler> {
-        let console = Console::new(&dbus, 0).await?;
+    pub async fn connect(display: &Display<'_>) -> anyhow::Result<InputHandler> {
+        let console = Console::new(display.connection(), 0).await?;
         let (tx, rx) = tokio::sync::mpsc::channel(30);
         let _task = task::spawn(async move { input_receive_task(rx, console).await });
 

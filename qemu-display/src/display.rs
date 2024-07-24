@@ -45,7 +45,7 @@ impl<'d> Display<'d> {
             .receive_name_owner_changed()
             .await?;
         loop {
-            let list = Display::by_name(conn).await?;
+            let list = Display::list_by_name(conn).await?;
             if let Some(name) = name {
                 let res = list.get(name);
                 if res.is_some() {
@@ -61,7 +61,7 @@ impl<'d> Display<'d> {
         }
     }
 
-    pub async fn by_name(conn: &Connection) -> Result<HashMap<String, OwnedUniqueName>> {
+    pub async fn list_by_name(conn: &Connection) -> Result<HashMap<String, OwnedUniqueName>> {
         let mut hm = HashMap::new();
         let list = match fdo::DBusProxy::new(conn)
             .await?
@@ -93,7 +93,7 @@ impl<'d> Display<'d> {
         D: TryInto<BusName<'d>>,
         D::Error: Into<Error>,
     {
-        let builder = fdo::ObjectManagerProxy::builder(conn);
+        let builder = fdo::ObjectManagerProxy::builder(conn).destination("org.qemu")?;
         let builder = if let Some(dest) = dest {
             let dest = dest.try_into().map_err(Into::into)?;
             builder.destination(dest)?
@@ -101,7 +101,11 @@ impl<'d> Display<'d> {
             builder
         };
         let proxy = builder.path("/org/qemu/Display1")?.build().await?;
-        let objects = proxy.get_managed_objects().await?;
+        let objects = proxy
+            .get_managed_objects()
+            .await
+            .map_err(|e| Error::Failed(format!("Unreachable QEMU display ({})", e)))?;
+
         // TODO: listen for changes
         let inner = Inner {
             // owner_changed,
@@ -119,6 +123,10 @@ impl<'d> Display<'d> {
 
     pub fn connection(&self) -> &Connection {
         &self.inner.conn
+    }
+
+    pub fn destination(&self) -> &BusName<'_> {
+        self.inner.proxy.inner().destination()
     }
 
     #[cfg(windows)]
