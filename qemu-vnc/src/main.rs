@@ -220,7 +220,7 @@ impl Client {
     async fn handle_event(&mut self, event: Option<Event>) -> Result<bool, Box<dyn Error>> {
         match event {
             Some(Event::Vnc(e)) => self.handle_vnc_event(e).await?,
-            Some(Event::ConsoleUpdate(_)) => {
+            Some(Event::ConsoleUpdate(_rect)) => {
                 self.has_update = true;
             }
             Some(Event::Disconnected) => {
