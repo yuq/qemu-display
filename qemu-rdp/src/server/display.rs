@@ -63,15 +63,15 @@ impl RdpServerDisplay for DisplayHandler {
 
 struct Listener {
     sender: tokio::sync::mpsc::Sender<DisplayUpdate>,
-    _desktop_size: DesktopSize,
+    desktop_size: DesktopSize,
     cursor_hot: (i32, i32),
 }
 
 impl Listener {
-    fn new(sender: tokio::sync::mpsc::Sender<DisplayUpdate>, _desktop_size: DesktopSize) -> Self {
+    fn new(sender: tokio::sync::mpsc::Sender<DisplayUpdate>, desktop_size: DesktopSize) -> Self {
         Self {
             sender,
-            _desktop_size,
+            desktop_size,
             cursor_hot: (0, 0),
         }
     }
@@ -93,10 +93,10 @@ impl ConsoleListenerHandler for Listener {
 
         tracing::debug!(?desktop_size);
 
-        // if desktop_size != self.desktop_size {
-        //     self.desktop_size = desktop_size;
-        //     self.send(DisplayUpdate::Resize(desktop_size)).await;
-        // }
+        if desktop_size != self.desktop_size {
+            self.desktop_size = desktop_size;
+            self.send(DisplayUpdate::Resize(desktop_size)).await;
+        }
 
         self.update(Update {
             x: 0,
