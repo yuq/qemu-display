@@ -25,3 +25,4 @@ ironrdp = { git = "https://github.com/Devolutions/IronRDP", features = [
     "displaycontrol",
     "rdpsnd"
 ] }
+futures-util = "0.3"

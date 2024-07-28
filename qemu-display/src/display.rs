@@ -209,6 +209,10 @@ impl<'d> Display<'d> {
         .await
     }
 
+    pub fn inner_proxy(&self) -> &zbus::Proxy<'d> {
+        self.inner.proxy.inner()
+    }
+
     pub async fn receive_owner_changed(&self) -> Result<OwnerChangedStream<'_>> {
         Ok(self.inner.proxy.inner().receive_owner_changed().await?)
     }

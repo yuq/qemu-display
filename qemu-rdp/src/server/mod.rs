@@ -4,7 +4,10 @@ mod input;
 mod sound;
 
 use anyhow::{anyhow, Context, Error};
-use ironrdp::server::tokio_rustls::{rustls, TlsAcceptor};
+use ironrdp::server::{
+    tokio_rustls::{rustls, TlsAcceptor},
+    ServerEvent,
+};
 
 use qemu_display::{zbus, Display};
 use rustls_pemfile::{certs, pkcs8_private_keys};
@@ -61,6 +64,16 @@ impl Server {
             .with_sound_factory(sound.map(|h| Box::new(h) as _))
             .build();
 
+        let ev = server.event_sender().clone();
+        let proxy = dbus_display.inner_proxy().clone();
+        tokio::spawn(async move {
+            use futures_util::StreamExt;
+
+            let mut owner_changed = proxy.receive_owner_changed().await.unwrap();
+            let _ = owner_changed.next().await;
+            ev.send(ServerEvent::Quit("org.qemu is gone".to_owned()))
+                .unwrap();
+        });
         server.run().await
     }
 }
