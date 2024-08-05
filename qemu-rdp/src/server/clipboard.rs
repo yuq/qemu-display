@@ -30,6 +30,7 @@ use tokio::{
 
 #[derive(Debug)]
 pub struct Inner {
+    registered: bool,
     clipboard: Clipboard,
     tx: Sender<ClipboardEvent>,
     selection: ClipboardSelection,
@@ -289,9 +290,13 @@ async fn rdp_clipboard_receive_task(mut rx: Receiver<ClipboardEvent>, cb: Clipbo
 
 impl Inner {
     fn register(&mut self) {
+        if self.registered {
+            return;
+        }
         if let Err(e) = self.tx.try_send(ClipboardEvent::Register) {
             error!(?e, "clipboard register error");
         }
+        self.registered = true;
     }
 
     fn grab(&mut self, available_formats: Vec<ClipboardFormat>) {
@@ -348,6 +353,7 @@ impl ClipboardHandler {
             ev_sender: None,
             dbus_request: None,
             _task: None,
+            registered: false,
         }));
 
         let s = Self { inner };
