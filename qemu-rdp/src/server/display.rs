@@ -1,22 +1,28 @@
+use std::thread;
+
 use anyhow::Result;
 use qemu_display::{Console, ConsoleListenerHandler, Cursor, Display, MouseSet, Scanout, Update};
 
 use ironrdp::{
     connector::DesktopSize,
+    displaycontrol::pdu::DisplayControlMonitorLayout,
     server::{
         BitmapUpdate, DisplayUpdate, PixelOrder, RGBAPointer, RdpServerDisplay,
         RdpServerDisplayUpdates,
     },
 };
 
-use crate::{cast, util::PixmanFormat};
+use crate::{cast, utils::PixmanFormat};
+
+mod queue;
+use queue::DisplayQueue;
 
 pub struct DisplayHandler {
     console: Console,
 }
 
 struct DisplayUpdates {
-    receiver: tokio::sync::mpsc::Receiver<DisplayUpdate>,
+    receiver: queue::Receiver,
 }
 
 impl DisplayHandler {
@@ -27,7 +33,7 @@ impl DisplayHandler {
     }
 
     async fn listen(&self) -> Result<DisplayUpdates> {
-        let (sender, receiver) = tokio::sync::mpsc::channel::<DisplayUpdate>(32);
+        let (sender, receiver) = DisplayQueue::new();
         let (width, height) = (
             self.console.width().await? as _,
             self.console.height().await? as _,
@@ -59,16 +65,34 @@ impl RdpServerDisplay for DisplayHandler {
     async fn updates(&mut self) -> Result<Box<dyn RdpServerDisplayUpdates>> {
         Ok(Box::new(self.listen().await?))
     }
+
+    fn request_layout(&mut self, layout: DisplayControlMonitorLayout) {
+        let console = self.console.proxy.clone();
+        thread::spawn(move || {
+            // TODO: multi-monitor
+            let Some(monitor) = layout.monitors().first() else {
+                return;
+            };
+            let (xoff, yoff) = monitor.position().unwrap_or_default();
+            let (width, height) = monitor.dimensions();
+            let (width_mm, height_mm) = monitor.physical_dimensions().unwrap_or_default();
+            crate::utils::block_on(async move {
+                let _ = console
+                    .set_ui_info(width_mm as u16, height_mm as u16, xoff, yoff, width, height)
+                    .await;
+            });
+        });
+    }
 }
 
 struct Listener {
-    sender: tokio::sync::mpsc::Sender<DisplayUpdate>,
+    sender: queue::Sender,
     desktop_size: DesktopSize,
     cursor_hot: (i32, i32),
 }
 
 impl Listener {
-    fn new(sender: tokio::sync::mpsc::Sender<DisplayUpdate>, desktop_size: DesktopSize) -> Self {
+    fn new(sender: queue::Sender, desktop_size: DesktopSize) -> Self {
         Self {
             sender,
             desktop_size,
@@ -128,6 +152,7 @@ impl ConsoleListenerHandler for Listener {
             format,
             order: PixelOrder::TopToBottom,
             data: update.data,
+            stride: cast!(update.stride),
         });
 
         self.send(bitmap).await;
