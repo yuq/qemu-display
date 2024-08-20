@@ -28,7 +28,7 @@ impl RdpServerInputHandler for InputHandler {
     }
 
     fn mouse(&mut self, event: MouseEvent) {
-        tracing::debug!(?event);
+        tracing::trace!(?event);
         if let Err(e) = self.tx.try_send(InputEvent::Mouse(event)) {
             eprintln!("mouse error: {:?}", e);
         }
@@ -41,6 +41,11 @@ async fn input_receive_task(mut rx: Receiver<InputEvent>, console: Console) {
             Some(InputEvent::Keyboard(ev)) => match ev {
                 KeyboardEvent::Pressed { code, .. } => console.keyboard.press(code as u32).await,
                 KeyboardEvent::Released { code, .. } => console.keyboard.release(code as u32).await,
+                KeyboardEvent::Synchronize(flags) => {
+                    tracing::debug!(?flags, "lock keys sync not supported yet");
+                    // console.keyboard.set_modifiers(0).await
+                    Ok(())
+                }
                 other => {
                     eprintln!("unhandled keyboard event: {:?}", other);
                     Ok(())
@@ -48,7 +53,7 @@ async fn input_receive_task(mut rx: Receiver<InputEvent>, console: Console) {
             },
             Some(InputEvent::Mouse(ev)) => match ev {
                 MouseEvent::Move { x, y } => {
-                    tracing::debug!(?x, ?y);
+                    tracing::trace!(?x, ?y);
                     console.mouse.set_abs_position(cast!(x), cast!(y)).await
                 }
                 MouseEvent::RightPressed => console.mouse.press(MouseButton::Right).await,

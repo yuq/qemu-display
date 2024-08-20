@@ -109,6 +109,7 @@ impl AudioOutHandler for DBusHandler {
             return;
         }
 
+        // TODO: handle format conversion
         if let Some(sender) = inner.ev_sender.as_ref() {
             let ts = inner.start_time.elapsed().as_millis() as _;
             let _ = sender.send(ServerEvent::Rdpsnd(RdpsndServerMessage::Wave(data, ts)));

@@ -3,7 +3,7 @@ use qemu_display::zbus;
 
 mod args;
 mod server;
-mod util;
+mod utils;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
