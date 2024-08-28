@@ -276,6 +276,7 @@ mod tests {
                 Bitmap(BitmapUpdate {
                     top: 0,
                     left: 0,
+                    stride: 0,
                     width: NonZero::new(1024).unwrap(),
                     height: NonZero::new(768).unwrap(),
                     format: PixelFormat::ABgr32,
@@ -318,6 +319,7 @@ mod tests {
                 Bitmap(BitmapUpdate {
                     top: 0,
                     left: 0,
+                    stride: 0,
                     width: NonZero::new(1024).unwrap(),
                     height: NonZero::new(768).unwrap(),
                     format: PixelFormat::ABgr32,
@@ -327,6 +329,7 @@ mod tests {
                 Bitmap(BitmapUpdate {
                     top: 0,
                     left: 0,
+                    stride: 0,
                     width: NonZero::new(1024).unwrap(),
                     height: NonZero::new(768).unwrap(),
                     format: PixelFormat::ABgr32,
