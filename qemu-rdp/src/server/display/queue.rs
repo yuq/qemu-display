@@ -117,7 +117,7 @@ fn push_update(queue: &mut MutexGuard<VecDeque<DisplayUpdate>>, item: DisplayUpd
             }
         }
         ColorPointer(_) | RGBAPointer(_) | HidePointer | DefaultPointer => {
-            // If there is already a pointer position update in the queue, replace it with the new one
+            // If there is already a pointer shape update in the queue, replace it with the new one
             if let Some(idx) = queue.iter().position(|update| {
                 matches!(
                     update,

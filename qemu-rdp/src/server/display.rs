@@ -68,6 +68,7 @@ impl RdpServerDisplay for DisplayHandler {
 
     fn request_layout(&mut self, layout: DisplayControlMonitorLayout) {
         let console = self.console.proxy.clone();
+        // TODO: use a queue and a dedicated task/thread for requests, to preserve order
         thread::spawn(move || {
             // TODO: multi-monitor
             let Some(monitor) = layout.monitors().first() else {
