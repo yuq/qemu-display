@@ -6,8 +6,6 @@ use tokio::{
     task,
 };
 
-use crate::cast;
-
 pub struct InputHandler {
     tx: Sender<InputEvent>,
     _task: task::JoinHandle<()>,
@@ -54,7 +52,7 @@ async fn input_receive_task(mut rx: Receiver<InputEvent>, console: Console) {
             Some(InputEvent::Mouse(ev)) => match ev {
                 MouseEvent::Move { x, y } => {
                     tracing::trace!(?x, ?y);
-                    console.mouse.set_abs_position(cast!(x), cast!(y)).await
+                    console.mouse.set_abs_position(x.into(), y.into()).await
                 }
                 MouseEvent::RightPressed => console.mouse.press(MouseButton::Right).await,
                 MouseEvent::RightReleased => console.mouse.release(MouseButton::Right).await,
