@@ -10,12 +10,9 @@ use ironrdp::{
             LockDataId, OwnedFormatDataResponse,
         },
     },
-    pdu::{
-        cursor::ReadCursor,
-        utils::{read_string_from_cursor, CharacterSet},
-    },
+    core::{impl_as_any, ReadCursor},
+    pdu::utils::{read_string_from_cursor, CharacterSet},
     server::{CliprdrServerFactory, ServerEvent, ServerEventSender},
-    svc::impl_as_any,
 };
 use tracing::{debug, error, warn};
 
