@@ -1,9 +1,12 @@
 #[cfg(windows)]
 use crate::win32::Fd;
 use derivative::Derivative;
-use std::ops::Drop;
 #[cfg(unix)]
 use std::os::unix::io::{AsRawFd, IntoRawFd, RawFd};
+use std::{
+    ops::Drop,
+    os::fd::{AsFd, OwnedFd},
+};
 #[cfg(unix)]
 use zbus::zvariant::Fd;
 
@@ -33,6 +36,9 @@ pub struct Update {
 
 #[derive(Debug)]
 pub struct ScanoutMap {
+    #[cfg(unix)]
+    pub fd: OwnedFd,
+    #[cfg(windows)]
     pub handle: u64,
     pub offset: u32,
     pub width: u32,
@@ -309,7 +315,6 @@ impl<H: ConsoleListenerHandler> Drop for ConsoleListener<H> {
     }
 }
 
-#[cfg(windows)]
 #[async_trait::async_trait]
 pub trait ConsoleListenerMapHandler: 'static + Send + Sync {
     async fn scanout_map(&mut self, scanout: ScanoutMap);
@@ -317,10 +322,40 @@ pub trait ConsoleListenerMapHandler: 'static + Send + Sync {
     async fn update_map(&mut self, update: UpdateMap);
 }
 
-#[cfg(windows)]
 #[derive(Debug)]
 pub(crate) struct ConsoleListenerMap<H: ConsoleListenerMapHandler> {
     handler: H,
+}
+
+#[cfg(unix)]
+#[zbus::interface(name = "org.qemu.Display1.Listener.Unix.Map")]
+impl<H: ConsoleListenerMapHandler> ConsoleListenerMap<H> {
+    async fn scanout_map(
+        &mut self,
+        fd: Fd<'_>,
+        offset: u32,
+        width: u32,
+        height: u32,
+        stride: u32,
+        format: u32,
+    ) -> zbus::fdo::Result<()> {
+        let map = ScanoutMap {
+            fd: fd.as_fd().try_clone_to_owned().unwrap(),
+            offset,
+            width,
+            height,
+            stride,
+            format,
+        };
+        self.handler.scanout_map(map).await;
+        Ok(())
+    }
+
+    async fn update_map(&mut self, x: i32, y: i32, w: i32, h: i32) -> zbus::fdo::Result<()> {
+        let up = UpdateMap { x, y, w, h };
+        self.handler.update_map(up).await;
+        Ok(())
+    }
 }
 
 #[cfg(windows)]
@@ -354,7 +389,6 @@ impl<H: ConsoleListenerMapHandler> ConsoleListenerMap<H> {
     }
 }
 
-#[cfg(windows)]
 impl<H: ConsoleListenerMapHandler> ConsoleListenerMap<H> {
     pub(crate) fn new(handler: H) -> Self {
         Self { handler }

@@ -10,14 +10,11 @@ use zbus::zvariant::Fd;
 use zbus::{zvariant::ObjectPath, Connection};
 
 use crate::{
-    util, ConsoleListener, ConsoleListenerHandler, KeyboardProxy, MouseProxy, MultiTouchProxy,
-    Result,
+    util, ConsoleListener, ConsoleListenerHandler, ConsoleListenerMap, ConsoleListenerMapHandler,
+    KeyboardProxy, MouseProxy, MultiTouchProxy, Result,
 };
 #[cfg(windows)]
-use crate::{
-    ConsoleListenerD3d11, ConsoleListenerD3d11Handler, ConsoleListenerMap,
-    ConsoleListenerMapHandler,
-};
+use crate::{ConsoleListenerD3d11, ConsoleListenerD3d11Handler};
 
 #[zbus::proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Console")]
 pub trait Console {
@@ -122,7 +119,6 @@ impl Console {
         Ok(())
     }
 
-    #[cfg(windows)]
     pub async fn set_map_listener<H: ConsoleListenerMapHandler>(&self, handler: H) -> Result<bool> {
         if let Some(l) = &*self.listener.write().unwrap() {
             return l
