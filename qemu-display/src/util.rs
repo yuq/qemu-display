@@ -1,5 +1,7 @@
 use crate::Result;
 
+use std::os::fd::RawFd;
+
 #[cfg(unix)]
 use std::os::unix::net::UnixStream;
 #[cfg(windows)]
@@ -29,4 +31,9 @@ pub fn prepare_uds_pass(#[cfg(windows)] peer_pid: u32, us: &UnixStream) -> Resul
         let p = win32::ProcessHandle::open(Some(peer_pid as _), PROCESS_DUP_HANDLE)?;
         p.duplicate_socket(SOCKET(us.as_raw_socket() as _))
     }
+}
+
+#[cfg(unix)]
+pub unsafe fn mmap(fd: RawFd, len: usize, offset: u64) -> std::io::Result<memmap2::Mmap> {
+    memmap2::MmapOptions::new().len(len).offset(offset).map(fd)
 }
