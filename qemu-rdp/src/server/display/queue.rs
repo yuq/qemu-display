@@ -1,10 +1,13 @@
 #![allow(dead_code)]
 // I wish I could reuse tokio::mpsc instead of creating a new queue from scratch
-use ironrdp::server::{BitmapUpdate, DisplayUpdate, PixelOrder};
+use ironrdp::{
+    core::assert_impl,
+    server::{BitmapUpdate, DisplayUpdate, PixelOrder},
+};
 use std::{
     collections::VecDeque,
     sync::{
-        atomic::{AtomicBool, Ordering},
+        atomic::{AtomicBool, AtomicUsize, Ordering},
         Arc,
     },
 };
@@ -24,15 +27,28 @@ pub(crate) struct DisplayQueue {
     notify_producer: Notify,
     notify_consumer: Notify,
     is_closed: AtomicBool,
+    senders: AtomicUsize,
 }
 
 pub(crate) struct Sender {
     channel: Arc<DisplayQueue>,
 }
 
+impl Clone for Sender {
+    fn clone(&self) -> Self {
+        self.channel.senders.fetch_add(1, Ordering::SeqCst);
+        Self {
+            channel: Arc::clone(&self.channel),
+        }
+    }
+}
+assert_impl!(Sender: Send);
+
 impl Drop for Sender {
     fn drop(&mut self) {
-        self.channel.close();
+        if self.channel.senders.fetch_sub(1, Ordering::SeqCst) == 1 {
+            self.channel.close();
+        }
     }
 }
 
@@ -53,6 +69,7 @@ impl DisplayQueue {
             notify_producer: Notify::new(),
             notify_consumer: Notify::new(),
             is_closed: AtomicBool::new(false),
+            senders: AtomicUsize::new(1),
         });
         (
             Sender {
