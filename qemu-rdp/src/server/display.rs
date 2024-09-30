@@ -1,4 +1,7 @@
-use std::thread;
+use std::{
+    sync::{Arc, Mutex},
+    thread,
+};
 
 use anyhow::Result;
 use qemu_display::{Console, ConsoleListenerHandler, Cursor, Display, MouseSet, Scanout, Update};
@@ -87,42 +90,63 @@ impl RdpServerDisplay for DisplayHandler {
     }
 }
 
-struct Listener {
+struct Inner {
     sender: queue::Sender,
     desktop_size: DesktopSize,
     cursor_hot: (i32, i32),
 }
 
+#[derive(Clone)]
+struct Listener {
+    inner: Arc<Mutex<Inner>>,
+}
+
 impl Listener {
     fn new(sender: queue::Sender, desktop_size: DesktopSize) -> Self {
-        Self {
+        let inner = Inner {
             sender,
             desktop_size,
             cursor_hot: (0, 0),
+        };
+        Self {
+            inner: Arc::new(Mutex::new(inner)),
         }
     }
 
     async fn send(&mut self, update: DisplayUpdate) {
-        if let Err(e) = self.sender.send(update).await {
+        let sender = self.inner.lock().unwrap().sender.clone();
+
+        if let Err(e) = sender.send(update).await {
             println!("{:?}", e);
         };
+    }
+
+    async fn set_desktop_size(&mut self, width: u32, height: u32) {
+        let desktop_size = DesktopSize {
+            width: cast!(width),
+            height: cast!(height),
+        };
+
+        debug!(?desktop_size);
+
+        {
+            let mut inner = self.inner.lock().unwrap();
+
+            if desktop_size == inner.desktop_size {
+                return;
+            }
+
+            inner.desktop_size = desktop_size;
+        }
+
+        self.send(DisplayUpdate::Resize(desktop_size)).await;
     }
 }
 
 #[async_trait::async_trait]
 impl ConsoleListenerHandler for Listener {
     async fn scanout(&mut self, scanout: Scanout) {
-        let desktop_size = DesktopSize {
-            width: cast!(scanout.width),
-            height: cast!(scanout.height),
-        };
-
-        debug!(?desktop_size);
-
-        if desktop_size != self.desktop_size {
-            self.desktop_size = desktop_size;
-            self.send(DisplayUpdate::Resize(desktop_size)).await;
-        }
+        self.set_desktop_size(scanout.width, scanout.height).await;
 
         self.update(Update {
             x: 0,
@@ -193,7 +217,11 @@ impl ConsoleListenerHandler for Listener {
 
     async fn cursor_define(&mut self, cursor: Cursor) {
         debug!(?cursor);
-        self.cursor_hot = (cursor.hot_x, cursor.hot_y);
+
+        {
+            let mut inner = self.inner.lock().unwrap();
+            inner.cursor_hot = (cursor.hot_x, cursor.hot_y);
+        }
 
         fn flip_vertically(image: Vec<u8>, width: usize, height: usize) -> Vec<u8> {
             let row_length = width * 4; // 4 bytes per pixel
