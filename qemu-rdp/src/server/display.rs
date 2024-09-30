@@ -11,6 +11,7 @@ use ironrdp::{
         RdpServerDisplayUpdates,
     },
 };
+use tracing::debug;
 
 use crate::{cast, utils::PixmanFormat};
 
@@ -116,7 +117,7 @@ impl ConsoleListenerHandler for Listener {
             height: cast!(scanout.height),
         };
 
-        tracing::debug!(?desktop_size);
+        debug!(?desktop_size);
 
         if desktop_size != self.desktop_size {
             self.desktop_size = desktop_size;
@@ -161,20 +162,20 @@ impl ConsoleListenerHandler for Listener {
 
     #[cfg(unix)]
     async fn scanout_dmabuf(&mut self, scanout: qemu_display::ScanoutDMABUF) {
-        tracing::debug!(?scanout);
+        debug!(?scanout);
     }
 
     #[cfg(unix)]
     async fn update_dmabuf(&mut self, update: qemu_display::UpdateDMABUF) {
-        tracing::debug!(?update);
+        debug!(?update);
     }
 
     async fn disable(&mut self) {
-        tracing::debug!("disable");
+        debug!("disable");
     }
 
     async fn mouse_set(&mut self, set: MouseSet) {
-        tracing::debug!(?set);
+        debug!(?set);
 
         // FIXME: this create weird effects on the client
         //
@@ -191,7 +192,7 @@ impl ConsoleListenerHandler for Listener {
     }
 
     async fn cursor_define(&mut self, cursor: Cursor) {
-        tracing::debug!(?cursor);
+        debug!(?cursor);
         self.cursor_hot = (cursor.hot_x, cursor.hot_y);
 
         fn flip_vertically(image: Vec<u8>, width: usize, height: usize) -> Vec<u8> {
@@ -223,7 +224,7 @@ impl ConsoleListenerHandler for Listener {
     }
 
     fn disconnected(&mut self) {
-        tracing::debug!("console listener disconnected");
+        debug!("console listener disconnected");
     }
 
     fn interfaces(&self) -> Vec<String> {
