@@ -119,19 +119,24 @@ impl Console {
         Ok(())
     }
 
+    #[tracing::instrument(skip(self, handler))]
     pub async fn set_map_listener<H: ConsoleListenerMapHandler>(&self, handler: H) -> Result<bool> {
-        if let Some(l) = &*self.listener.write().unwrap() {
-            return l
-                .object_server()
-                .at(
-                    "/org/qemu/Display1/Listener",
-                    ConsoleListenerMap::new(handler),
-                )
-                .await
-                .map_err(|e| e.into());
+        let listener = self.listener.write().unwrap().take();
+        match listener {
+            Some(l) => {
+                let res = l
+                    .object_server()
+                    .at(
+                        "/org/qemu/Display1/Listener",
+                        ConsoleListenerMap::new(handler),
+                    )
+                    .await
+                    .map_err(|e| e.into());
+                *self.listener.write().unwrap() = Some(l);
+                res
+            }
+            _ => Err(crate::Error::Failed("Must call register first!".into())),
         }
-
-        Err(crate::Error::Failed("Must call register first!".into()))
     }
 
     #[cfg(windows)]

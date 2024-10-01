@@ -4,7 +4,10 @@ use std::{
 };
 
 use anyhow::Result;
-use qemu_display::{Console, ConsoleListenerHandler, Cursor, Display, MouseSet, Scanout, Update};
+use qemu_display::{
+    Console, ConsoleListenerHandler, ConsoleListenerMapHandler, Cursor, Display, MouseSet, Scanout,
+    ScanoutMap, ScanoutMmap, Update, UpdateMap,
+};
 
 use ironrdp::{
     connector::DesktopSize,
@@ -14,7 +17,7 @@ use ironrdp::{
         RdpServerDisplayUpdates,
     },
 };
-use tracing::debug;
+use tracing::{debug, warn};
 
 use crate::{cast, utils::PixmanFormat};
 
@@ -45,7 +48,9 @@ impl DisplayHandler {
         let desktop_size = DesktopSize { width, height };
         let listener = Listener::new(sender, desktop_size);
         self.console.unregister_listener();
-        self.console.register_listener(listener).await?;
+        self.console.register_listener(listener.clone()).await?;
+        #[cfg(any(windows, unix))]
+        self.console.set_map_listener(listener.clone()).await?;
 
         Ok(DisplayUpdates { receiver })
     }
@@ -94,6 +99,7 @@ struct Inner {
     sender: queue::Sender,
     desktop_size: DesktopSize,
     cursor_hot: (i32, i32),
+    scanout_mmap: Option<ScanoutMmap>,
 }
 
 #[derive(Clone)]
@@ -107,6 +113,7 @@ impl Listener {
             sender,
             desktop_size,
             cursor_hot: (0, 0),
+            scanout_mmap: None,
         };
         Self {
             inner: Arc::new(Mutex::new(inner)),
@@ -140,6 +147,45 @@ impl Listener {
         }
 
         self.send(DisplayUpdate::Resize(desktop_size)).await;
+    }
+}
+
+#[async_trait::async_trait]
+impl ConsoleListenerMapHandler for Listener {
+    async fn scanout_map(&mut self, scanout: ScanoutMap) {
+        self.set_desktop_size(scanout.width, scanout.height).await;
+        match scanout.mmap() {
+            Ok(mmap) => self.inner.lock().unwrap().scanout_mmap = Some(mmap),
+            Err(err) => warn!("Failed to mmap: {}", err),
+        }
+    }
+
+    async fn update_map(&mut self, update: UpdateMap) {
+        let update = {
+            let inner = self.inner.lock().unwrap();
+            let Some(mmap) = &inner.scanout_mmap else {
+                warn!("Update with no map!");
+                return;
+            };
+            let (stride, format) = (mmap.stride(), mmap.format());
+            if format != 0x20020888 {
+                warn!("Format not yet supported: {:X}", format);
+                return;
+            }
+            // FIXME: use arc of data
+            let data = mmap.as_ref()[update.y as usize * stride as usize + update.x as usize * 4..]
+                .to_vec();
+            Update {
+                x: update.x,
+                y: update.y,
+                w: update.w,
+                h: update.h,
+                stride,
+                format,
+                data,
+            }
+        };
+        self.update(update).await
     }
 }
 
@@ -256,6 +302,10 @@ impl ConsoleListenerHandler for Listener {
     }
 
     fn interfaces(&self) -> Vec<String> {
-        vec![]
+        if cfg!(unix) {
+            vec!["org.qemu.Display1.Listener.Unix.Map".to_string()]
+        } else {
+            vec![]
+        }
     }
 }

@@ -1,11 +1,13 @@
 #[cfg(windows)]
-use crate::win32::Fd;
+use crate::win32::{Fd, Mmap};
 use derivative::Derivative;
 #[cfg(unix)]
-use std::os::unix::io::{AsRawFd, IntoRawFd, RawFd};
-use std::{
-    ops::Drop,
-    os::fd::{AsFd, OwnedFd},
+use memmap2::Mmap;
+use std::ops::Drop;
+#[cfg(unix)]
+use std::os::{
+    fd::{AsFd, OwnedFd},
+    unix::io::{AsRawFd, IntoRawFd, RawFd},
 };
 #[cfg(unix)]
 use zbus::zvariant::Fd;
@@ -45,6 +47,58 @@ pub struct ScanoutMap {
     pub height: u32,
     pub stride: u32,
     pub format: u32,
+}
+
+#[derive(Debug)]
+pub struct ScanoutMmap {
+    scanout: ScanoutMap,
+    #[cfg(unix)]
+    mmap: Mmap,
+    #[cfg(windows)]
+    mmap: Mmap,
+}
+
+impl ScanoutMap {
+    pub fn mmap(self) -> std::io::Result<ScanoutMmap> {
+        let len = self.height as usize * self.stride as usize;
+        let offset = self.offset;
+
+        #[cfg(unix)]
+        let mmap = {
+            let fd = self.fd.as_raw_fd();
+            unsafe {
+                memmap2::MmapOptions::new()
+                    .len(len)
+                    .offset(offset.into())
+                    .map(fd)
+            }?
+        };
+
+        #[cfg(windows)]
+        let mmap = {
+            let handle = windows::Win32::Foundation::HANDLE(self.handle as _); // taking ownership
+            Mmap::new(handle, offset.try_into().unwrap(), len)?
+        };
+
+        Ok(ScanoutMmap {
+            scanout: self,
+            mmap,
+        })
+    }
+}
+
+impl ScanoutMmap {
+    pub fn as_ref(&self) -> &[u8] {
+        self.mmap.as_ref()
+    }
+
+    pub fn stride(&self) -> u32 {
+        self.scanout.stride
+    }
+
+    pub fn format(&self) -> u32 {
+        self.scanout.format
+    }
 }
 
 #[derive(Debug, Copy, Clone)]
