@@ -3,15 +3,12 @@ mod display;
 mod input;
 mod sound;
 
-use anyhow::{anyhow, Context, Error};
-use ironrdp::server::{
-    tokio_rustls::{rustls, TlsAcceptor},
-    ServerEvent,
-};
+use anyhow::Error;
+use enumflags2::BitFlags;
+use ironrdp::server::{Credentials, ServerEvent, TlsIdentityCtx};
 
 use qemu_display::{zbus, Display};
-use rustls_pemfile::{certs, pkcs8_private_keys};
-use std::{fs::File, io::BufReader, sync::Arc};
+use tokio::sync::mpsc::UnboundedSender;
 use tracing::debug;
 
 use ironrdp::server::RdpServer;
@@ -28,20 +25,16 @@ pub struct Server {
     args: ServerArgs,
 }
 
+struct DBusCtrl {
+    ev: UnboundedSender<ServerEvent>,
+}
+
 impl Server {
     pub fn new(dbus: zbus::Connection, args: ServerArgs) -> Self {
         Self { dbus, args }
     }
 
     pub async fn run(&mut self) -> Result<(), Error> {
-        let tls = self
-            .args
-            .cert
-            .as_ref()
-            .zip(self.args.key.as_ref())
-            .map(|(cert, key)| acceptor(cert, key).unwrap())
-            .ok_or_else(|| anyhow!("Failed to setup TLS"))?;
-
         let dbus_display = Display::new::<()>(&self.dbus, None).await?;
 
         let handler = InputHandler::connect(&dbus_display).await?;
@@ -55,9 +48,11 @@ impl Server {
             }
         };
 
+        let tls =
+            TlsIdentityCtx::init_from_paths(self.args.cert.as_path(), self.args.key.as_path())?;
         let mut server = RdpServer::builder()
-            .with_addr((self.args.address, self.args.port))
-            .with_tls(tls)
+            .with_addr(self.args.bind_addr)
+            .with_hybrid(tls.make_acceptor()?, tls.pub_key)
             .with_input_handler(handler)
             .with_display_handler(display)
             .with_cliprdr_factory(Some(Box::new(clipboard)))
@@ -74,26 +69,33 @@ impl Server {
             ev.send(ServerEvent::Quit("org.qemu is gone".to_owned()))
                 .unwrap();
         });
+
+        let ev = server.event_sender().clone();
+        self.dbus
+            .object_server()
+            .at("/org/qemu_display/rdp", DBusCtrl { ev })
+            .await?;
+        self.dbus
+            .request_name_with_flags("org.QemuDisplay", BitFlags::EMPTY)
+            .await?;
+
         server.run().await
     }
 }
 
-fn acceptor(cert_path: &str, key_path: &str) -> Result<TlsAcceptor, Error> {
-    let cert = certs(&mut BufReader::new(File::open(cert_path)?))
-        .next()
-        .context("no certificate")??;
-    let key = pkcs8_private_keys(&mut BufReader::new(File::open(key_path)?))
-        .next()
-        .context("no private key")?
-        .map(rustls::pki_types::PrivateKeyDer::from)?;
-
-    let mut server_config = rustls::ServerConfig::builder()
-        .with_no_client_auth()
-        .with_single_cert(vec![cert], key)
-        .expect("bad certificate/key");
-
-    // This adds support for the SSLKEYLOGFILE env variable (https://wiki.wireshark.org/TLS#using-the-pre-master-secret)
-    server_config.key_log = Arc::new(rustls::KeyLogFile::new());
-
-    Ok(TlsAcceptor::from(Arc::new(server_config)))
+#[zbus::interface(name = "org.QemuDisplay.RDP")]
+impl DBusCtrl {
+    async fn set_credentials(&self, username: &str, password: &str, domain: &str) {
+        self.ev
+            .send(ServerEvent::SetCredentials(Credentials {
+                username: username.into(),
+                password: password.into(),
+                domain: if domain.is_empty() {
+                    None
+                } else {
+                    Some(domain.into())
+                },
+            }))
+            .unwrap();
+    }
 }

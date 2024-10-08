@@ -1,43 +1,20 @@
-use clap::{clap_derive::ValueEnum, Parser};
+use std::path::PathBuf;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, ValueEnum)]
-pub enum SecurityProtocol {
-    Ssl,
-    Hybrid,
-    HybridEx,
-}
-
-impl From<SecurityProtocol> for ironrdp::pdu::nego::SecurityProtocol {
-    fn from(value: SecurityProtocol) -> Self {
-        match value {
-            SecurityProtocol::Ssl => ironrdp::pdu::nego::SecurityProtocol::SSL,
-            SecurityProtocol::Hybrid => ironrdp::pdu::nego::SecurityProtocol::HYBRID,
-            SecurityProtocol::HybridEx => ironrdp::pdu::nego::SecurityProtocol::HYBRID_EX,
-        }
-    }
-}
+use clap::Parser;
 
 #[derive(Parser, Debug)]
 pub struct ServerArgs {
     /// IP address
-    #[clap(short, long, default_value = "127.0.0.1")]
-    pub address: std::net::IpAddr,
-
-    /// IP port
-    #[clap(short, long, default_value = "3389")]
-    pub port: u16,
-
-    /// Specify the security protocols to use
-    #[clap(long, value_enum, value_parser, default_value_t = SecurityProtocol::Ssl)]
-    pub security_protocol: SecurityProtocol,
+    #[clap(short, long, default_value = "0.0.0.0:3389")]
+    pub bind_addr: std::net::SocketAddr,
 
     /// Path to tls certificate
     #[clap(short, long, value_parser)]
-    pub cert: Option<String>,
+    pub cert: PathBuf,
 
     /// Path to private key
     #[clap(short, long, value_parser)]
-    pub key: Option<String>,
+    pub key: PathBuf,
 }
 
 #[derive(Parser, Debug)]
