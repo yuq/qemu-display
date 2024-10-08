@@ -110,7 +110,7 @@ impl Console {
             &p0,
         )?;
         self.proxy.register_listener(p0).await?;
-        let c = zbus::ConnectionBuilder::unix_stream(p1)
+        let c = zbus::connection::Builder::unix_stream(p1)
             .p2p()
             .serve_at("/org/qemu/Display1/Listener", ConsoleListener::new(handler))?
             .build()

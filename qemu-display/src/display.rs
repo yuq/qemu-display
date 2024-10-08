@@ -9,7 +9,7 @@ use zbus::{
     fdo::ManagedObjects,
     names::{BusName, OwnedUniqueName, UniqueName, WellKnownName},
     zvariant::OwnedObjectPath,
-    Connection, OwnerChangedStream,
+    Connection, proxy::OwnerChangedStream,
 };
 
 #[cfg(unix)]

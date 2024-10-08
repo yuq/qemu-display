@@ -1,7 +1,7 @@
 #![allow(clippy::too_many_arguments)]
 
-pub use zbus;
 pub use memmap2;
+pub use zbus;
 
 pub mod util;
 #[cfg(windows)]

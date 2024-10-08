@@ -57,7 +57,7 @@ pub struct Volume {
     default_path = "/org/qemu/Display1/Audio",
     interface = "org.qemu.Display1.Audio"
 )]
-trait Audio {
+pub trait Audio {
     /// RegisterOutListener method
     fn register_out_listener(&self, listener: Fd<'_>) -> zbus::Result<()>;
 
@@ -269,7 +269,7 @@ impl Audio {
             &p0,
         )?;
         self.proxy.register_out_listener(p0).await?;
-        let c = zbus::ConnectionBuilder::unix_stream(p1)
+        let c = zbus::connection::Builder::unix_stream(p1)
             .p2p()
             .serve_at(
                 "/org/qemu/Display1/AudioOutListener",
@@ -289,7 +289,7 @@ impl Audio {
             &p0,
         )?;
         self.proxy.register_in_listener(p0).await?;
-        let c = zbus::ConnectionBuilder::unix_stream(p1)
+        let c = zbus::connection::Builder::unix_stream(p1)
             .p2p()
             .serve_at(
                 "/org/qemu/Display1/AudioInListener",

@@ -17,6 +17,6 @@ pub enum TouchEventKind {
 pub trait MultiTouch {
     fn send_event(&self, kind: TouchEventKind, num_slot: u64, x: f64, y: f64) -> zbus::Result<()>;
 
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn max_slots(&self) -> zbus::Result<i32>;
 }
