@@ -30,6 +30,13 @@ pub struct DisplayHandler {
 
 struct DisplayUpdates {
     receiver: queue::Receiver,
+    console: Console,
+}
+
+impl Drop for DisplayUpdates {
+    fn drop(&mut self) {
+        self.console.unregister_listener();
+    }
 }
 
 impl DisplayHandler {
@@ -52,7 +59,8 @@ impl DisplayHandler {
         #[cfg(any(windows, unix))]
         self.console.set_map_listener(listener.clone()).await?;
 
-        Ok(DisplayUpdates { receiver })
+        let console = self.console.clone();
+        Ok(DisplayUpdates { receiver, console })
     }
 }
 

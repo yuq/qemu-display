@@ -2,7 +2,10 @@
 use crate::win32::Fd;
 #[cfg(unix)]
 use std::os::unix::net::UnixStream;
-use std::{convert::TryFrom, sync::RwLock};
+use std::{
+    convert::TryFrom,
+    sync::{Arc, RwLock},
+};
 #[cfg(windows)]
 use uds_windows::UnixStream;
 #[cfg(unix)]
@@ -50,7 +53,7 @@ pub trait Console {
 }
 
 #[derive(derivative::Derivative)]
-#[derivative(Debug)]
+#[derivative(Debug, Clone)]
 pub struct Console {
     #[derivative(Debug = "ignore")]
     pub proxy: ConsoleProxy<'static>,
@@ -60,7 +63,7 @@ pub struct Console {
     pub mouse: MouseProxy<'static>,
     #[derivative(Debug = "ignore")]
     pub multi_touch: MultiTouchProxy<'static>,
-    listener: RwLock<Option<Connection>>,
+    listener: Arc<RwLock<Option<Connection>>>,
     #[cfg(windows)]
     peer_pid: u32,
 }
@@ -83,7 +86,7 @@ impl Console {
             keyboard,
             mouse,
             multi_touch,
-            listener: RwLock::new(None),
+            listener: Arc::new(RwLock::new(None)),
             #[cfg(windows)]
             peer_pid,
         })
