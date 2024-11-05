@@ -1,13 +1,22 @@
+use std::io::Write;
+
 use anyhow::Context;
+use clap::{CommandFactory, Parser};
 use qemu_display::zbus;
 
 mod args;
 mod server;
 mod utils;
 
+use args::Args;
+
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
-    let mut args = args::parse();
+    let mut args = Args::parse();
+
+    if args.print_capabilities {
+        return print_capabilities();
+    }
 
     setup_logging().context("unable to initialize logging")?;
 
@@ -21,7 +30,28 @@ async fn main() -> Result<(), anyhow::Error> {
     }
     .expect("Failed to connect to DBus");
 
-    server::Server::new(dbus, args.server).run().await?;
+    match args.command {
+        Some(args::Commands::Serve(args)) => server::Server::new(dbus, args).run().await?,
+        _ => {
+            Args::command().print_help().unwrap();
+        }
+    }
+
+    Ok(())
+}
+
+fn print_capabilities() -> Result<(), anyhow::Error> {
+    std::io::stdout().write_all(
+        r#"{
+  "type": "qemu-rdp",
+  "features": [
+    "dbus-address",
+    "remotefx"
+  ]
+}
+"#
+        .as_bytes(),
+    )?;
 
     Ok(())
 }
