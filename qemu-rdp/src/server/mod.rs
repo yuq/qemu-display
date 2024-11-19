@@ -3,7 +3,9 @@ mod display;
 mod input;
 mod sound;
 
-use anyhow::Error;
+use std::path::PathBuf;
+
+use anyhow::{bail, Error};
 use enumflags2::BitFlags;
 use ironrdp::server::{Credentials, ServerEvent, TlsIdentityCtx};
 
@@ -35,6 +37,25 @@ impl Server {
     }
 
     pub async fn run(&mut self) -> Result<(), Error> {
+        let (cert, key) = match (&self.args.cert, &self.args.key) {
+            (Some(cert), Some(key)) => (cert.as_path().to_owned(), key.as_path().to_owned()),
+            (None, None) => {
+                let mut config_dir = dirs::config_dir().expect("configuration directory");
+                config_dir.push("qemu-rdp");
+                let cert: PathBuf = [config_dir.clone(), PathBuf::from("cert.der")]
+                    .iter()
+                    .collect();
+                let key: PathBuf = [config_dir, PathBuf::from("key.der")].iter().collect();
+                (cert, key)
+            }
+            _ => {
+                bail!("Provide both --cert and --key")
+            }
+        };
+
+        println!("Waiting for org.qemu...");
+        Display::lookup(&self.dbus, true, None).await?;
+
         let dbus_display = Display::new::<()>(&self.dbus, None).await?;
 
         let handler = InputHandler::connect(&dbus_display).await?;
@@ -48,8 +69,7 @@ impl Server {
             }
         };
 
-        let tls =
-            TlsIdentityCtx::init_from_paths(self.args.cert.as_path(), self.args.key.as_path())?;
+        let tls = TlsIdentityCtx::init_from_paths(&cert, &key)?;
         let mut server = RdpServer::builder()
             .with_addr(self.args.bind_addr)
             .with_hybrid(tls.make_acceptor()?, tls.pub_key)
@@ -80,7 +100,11 @@ impl Server {
             .request_name_with_flags("org.QemuDisplay", BitFlags::EMPTY)
             .await?;
 
-        server.run().await
+        println!("Starting RDP server, args: {:?}", self.args);
+        println!("Cert: {cert:?}, Key: {key:?}");
+        server.run().await?;
+        println!("RDP server ended");
+        Ok(())
     }
 }
 

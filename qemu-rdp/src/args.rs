@@ -21,7 +21,7 @@ pub struct Args {
 #[derive(Debug, Subcommand)]
 pub enum Commands {
     /// Start a RDP server
-    #[command(arg_required_else_help = true)]
+    #[command()]
     Serve(ServerArgs),
 }
 
@@ -34,11 +34,11 @@ pub struct ServerArgs {
 
     /// Path to tls certificate
     #[clap(short, long, value_parser)]
-    pub cert: PathBuf,
+    pub cert: Option<PathBuf>,
 
     /// Path to private key
     #[clap(short, long, value_parser)]
-    pub key: PathBuf,
+    pub key: Option<PathBuf>,
 
     /// RemoteFx encoding
     #[clap(value_enum, long, default_value = "enable")]
