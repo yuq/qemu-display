@@ -50,7 +50,7 @@ enum Event {
 }
 
 const PIXMAN_X8R8G8B8: u32 = 0x20020888;
-type BgraImage = image::ImageBuffer<image::Bgra<u8>, Vec<u8>>;
+type RgbaImage = image::ImageBuffer<image::Rgba<u8>, Vec<u8>>;
 
 #[derive(derivative::Derivative)]
 #[derivative(Debug)]
@@ -252,6 +252,7 @@ impl ConsoleListenerHandler for ConsoleListener {
     }
 
     async fn update(&mut self, u: qemu_display::Update) {
+        dbg!(&u);
         let mut inner = self.server.inner.lock().unwrap();
         let update = image_from_vec(u.format, u.w as _, u.h as _, u.stride, u.data);
         if (u.x, u.y) == (0, 0) && update.dimensions() == inner.image.dimensions() {
@@ -296,7 +297,7 @@ impl ConsoleListenerHandler for ConsoleListener {
 #[derive(Debug)]
 struct ServerInner {
     console: Console,
-    image: BgraImage,
+    image: RgbaImage,
     tx: mpsc::Sender<Event>,
 }
 
@@ -311,7 +312,7 @@ impl Server {
     async fn new(vm_name: String, console: Console) -> Result<Self, Box<dyn Error>> {
         let width = console.width().await?;
         let height = console.height().await?;
-        let image = BgraImage::new(width as _, height as _);
+        let image = RgbaImage::new(width as _, height as _);
         let (tx, rx) = mpsc::channel();
         Ok(Self {
             vm_name,
@@ -442,7 +443,7 @@ pub fn pixman_xrgb() -> PixelFormat {
     }
 }
 
-fn image_from_vec(format: u32, width: u32, height: u32, stride: u32, data: Vec<u8>) -> BgraImage {
+fn image_from_vec(format: u32, width: u32, height: u32, stride: u32, data: Vec<u8>) -> RgbaImage {
     if format != PIXMAN_X8R8G8B8 {
         todo!("unhandled pixman format: {}", format)
     }
@@ -463,11 +464,11 @@ fn image_from_vec(format: u32, width: u32, height: u32, stride: u32, data: Vec<u
         color_hint: None,
     };
     samples
-        .try_into_buffer::<image::Bgra<u8>>()
+        .try_into_buffer::<image::Rgba<u8>>()
         .or_else::<&str, _>(|(err, samples)| {
             eprintln!("failed to convert image: {}", err);
-            let view = samples.as_view::<image::Bgra<u8>>().unwrap();
-            let mut img = BgraImage::new(width, height);
+            let view = samples.as_view::<image::Rgba<u8>>().unwrap();
+            let mut img = RgbaImage::new(width, height);
             img.copy_from(&view, 0, 0).unwrap();
             Ok(img)
         })
@@ -479,7 +480,7 @@ async fn run() -> Result<(), Box<dyn Error>> {
 
     let listener = TcpListener::bind::<std::net::SocketAddr>(args.address.into()).unwrap();
     let dbus = if let Some(addr) = args.dbus_address {
-        zbus::ConnectionBuilder::address(addr.borrow())?
+        zbus::connection::Builder::address(addr.borrow())?
             .build()
             .await
     } else {
