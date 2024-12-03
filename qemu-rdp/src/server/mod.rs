@@ -1,22 +1,19 @@
+use anyhow::{bail, Error};
+use enumflags2::BitFlags;
+use ironrdp::server::{Credentials, ServerEvent, TlsIdentityCtx};
+use std::path::PathBuf;
+use tokio::sync::{mpsc::UnboundedSender, oneshot};
+use tracing::{debug, error};
+
+use ironrdp::server::RdpServer;
+use qemu_display::{zbus, Display};
+
 mod clipboard;
 mod display;
 mod input;
 mod sound;
 
-use std::path::PathBuf;
-
-use anyhow::{bail, Error};
-use enumflags2::BitFlags;
-use ironrdp::server::{Credentials, ServerEvent, TlsIdentityCtx};
-
-use qemu_display::{zbus, Display};
-use tokio::sync::mpsc::UnboundedSender;
-use tracing::debug;
-
-use ironrdp::server::RdpServer;
-
 use crate::args::ServerArgs;
-
 use clipboard::ClipboardHandler;
 use display::DisplayHandler;
 use input::InputHandler;
@@ -71,7 +68,7 @@ impl Server {
 
         let tls = TlsIdentityCtx::init_from_paths(&cert, &key)?;
         let mut server = RdpServer::builder()
-            .with_addr(self.args.bind_addr)
+            .with_addr(self.args.bind_address)
             .with_hybrid(tls.make_acceptor()?, tls.pub_key)
             .with_input_handler(handler)
             .with_display_handler(display)
@@ -94,7 +91,7 @@ impl Server {
         let ev = server.event_sender().clone();
         self.dbus
             .object_server()
-            .at("/org/qemu_display/rdp", DBusCtrl { ev })
+            .at("/org/qemu_rdp", DBusCtrl { ev })
             .await?;
         self.dbus
             .request_name_with_flags("org.QemuDisplay", BitFlags::EMPTY)
@@ -108,19 +105,35 @@ impl Server {
     }
 }
 
-#[zbus::interface(name = "org.QemuDisplay.RDP")]
+#[zbus::interface(name = "org.QemuRDP")]
 impl DBusCtrl {
     async fn set_credentials(&self, username: &str, password: &str, domain: &str) {
-        self.ev
-            .send(ServerEvent::SetCredentials(Credentials {
-                username: username.into(),
-                password: password.into(),
-                domain: if domain.is_empty() {
-                    None
-                } else {
-                    Some(domain.into())
-                },
-            }))
-            .unwrap();
+        if let Err(error) = self.ev.send(ServerEvent::SetCredentials(Credentials {
+            username: username.into(),
+            password: password.into(),
+            domain: if domain.is_empty() {
+                None
+            } else {
+                Some(domain.into())
+            },
+        })) {
+            error!(?error, "Failed to send SetCredentials")
+        }
+    }
+
+    #[zbus(property)]
+    async fn listen_address(&self) -> zbus::fdo::Result<String> {
+        let (tx, rx) = oneshot::channel();
+        if let Err(error) = self.ev.send(ServerEvent::GetLocalAddr(tx)) {
+            error!(?error, "Failed to send GetLocalAddr")
+        }
+        if let Some(addr) = rx
+            .await
+            .map_err(|e| zbus::fdo::Error::Failed(e.to_string()))?
+        {
+            Ok(addr.to_string())
+        } else {
+            Err(zbus::fdo::Error::Failed("Not yet available".into()))
+        }
     }
 }

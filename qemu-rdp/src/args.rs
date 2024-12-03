@@ -30,7 +30,7 @@ pub enum Commands {
 pub struct ServerArgs {
     /// IP address
     #[clap(short, long, default_value = "0.0.0.0:3389")]
-    pub bind_addr: std::net::SocketAddr,
+    pub bind_address: std::net::SocketAddr,
 
     /// Path to tls certificate
     #[clap(short, long, value_parser)]
