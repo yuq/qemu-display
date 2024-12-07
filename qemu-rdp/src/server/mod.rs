@@ -91,10 +91,10 @@ impl Server {
         let ev = server.event_sender().clone();
         self.dbus
             .object_server()
-            .at("/org/qemu_rdp", DBusCtrl { ev })
+            .at("/org/qemu_display/rdp", DBusCtrl { ev })
             .await?;
         self.dbus
-            .request_name_with_flags("org.QemuDisplay", BitFlags::EMPTY)
+            .request_name_with_flags("org.QemuDisplay.RDP", BitFlags::EMPTY)
             .await?;
 
         println!("Starting RDP server, args: {:?}", self.args);
@@ -105,7 +105,7 @@ impl Server {
     }
 }
 
-#[zbus::interface(name = "org.QemuRDP")]
+#[zbus::interface(name = "org.QemuDisplay.RDP")]
 impl DBusCtrl {
     async fn set_credentials(&self, username: &str, password: &str, domain: &str) {
         if let Err(error) = self.ev.send(ServerEvent::SetCredentials(Credentials {
