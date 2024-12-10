@@ -1,6 +1,6 @@
 //
 // This file is auto-generated from keymaps.csv
-// Database checksum sha256(76d68c10e97d37fe2ea459e210125ae41796253fb217e900bf2983ade13a7920)
+// Database checksum sha256(527727ef96d7103a8d7725a6ed9738812660b5a3f4aec086dd7b587b1ba9fcca)
 // To re-generate, run:
 //   keymap-gen code-map --lang=rust --varname=keymap_x112qnum keymaps.csv x11 qnum
 //
@@ -97,10 +97,10 @@ pub static KEYMAP_X112QNUM: &[u16] = &[
   0x15, // x11:89 (XK_y) -> linux:21 (KEY_Y) -> qnum:21
   0x2c, // x11:90 (XK_z) -> linux:44 (KEY_Z) -> qnum:44
   0x1a, // x11:91 (XK_braceleft) -> linux:26 (KEY_LEFTBRACE) -> qnum:26
-  0x2b, // x11:92 (XK_bar) -> linux:43 (KEY_BACKSLASH) -> qnum:43
+  0x56, // x11:92 (XK_backslash) -> linux:86 (KEY_102ND) -> qnum:86
   0x1b, // x11:93 (XK_braceright) -> linux:27 (KEY_RIGHTBRACE) -> qnum:27
   0x7, // x11:94 (XK_asciicircum) -> linux:7 (KEY_6) -> qnum:7
-  0xc, // x11:95 (XK_underscore) -> linux:12 (KEY_MINUS) -> qnum:12
+  0x73, // x11:95 (XK_underscore) -> linux:89 (KEY_RO) -> qnum:115
   0x29, // x11:96 (XK_asciitilde) -> linux:41 (KEY_GRAVE) -> qnum:41
   0x1e, // x11:97 (XK_a) -> linux:30 (KEY_A) -> qnum:30
   0x30, // x11:98 (XK_b) -> linux:48 (KEY_B) -> qnum:48
@@ -65319,15 +65319,15 @@ pub static KEYMAP_X112QNUM: &[u16] = &[
   0, // x11:65311 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // x11:65312 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // x11:65313 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0, // x11:65314 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0, // x11:65315 (unnamed) -> linux:None (unnamed) -> qnum:None
+  0x7b, // x11:65314 (XK_Muhenkan) -> linux:94 (KEY_MUHENKAN) -> qnum:123
+  0x79, // x11:65315 (XK_Henkan) -> linux:92 (KEY_HENKAN) -> qnum:121
   0, // x11:65316 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0, // x11:65317 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0, // x11:65318 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0, // x11:65319 (unnamed) -> linux:None (unnamed) -> qnum:None
+  0x77, // x11:65317 (XK_Hiragana) -> linux:91 (KEY_HIRAGANA) -> qnum:119
+  0x78, // x11:65318 (XK_Katakana) -> linux:90 (KEY_KATAKANA) -> qnum:120
+  0x70, // x11:65319 (XK_Hiragana_Katakana) -> linux:93 (KEY_KATAKANAHIRAGANA) -> qnum:112
   0, // x11:65320 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // x11:65321 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0, // x11:65322 (unnamed) -> linux:None (unnamed) -> qnum:None
+  0x76, // x11:65322 (XK_Zenkaku_Hankaku) -> linux:85 (KEY_ZENKAKUHANKAKU) -> qnum:118
   0, // x11:65323 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // x11:65324 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // x11:65325 (unnamed) -> linux:None (unnamed) -> qnum:None

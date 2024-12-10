@@ -1,6 +1,6 @@
 //
 // This file is auto-generated from keymaps.csv
-// Database checksum sha256(76d68c10e97d37fe2ea459e210125ae41796253fb217e900bf2983ade13a7920)
+// Database checksum sha256(527727ef96d7103a8d7725a6ed9738812660b5a3f4aec086dd7b587b1ba9fcca)
 // To re-generate, run:
 //   keymap-gen code-map --lang=rust --varname=keymap_xorgxquartz2qnum keymaps.csv xorgxquartz qnum
 //
@@ -23,7 +23,7 @@ pub static KEYMAP_XORGXQUARTZ2QNUM: &[u16] = &[
   0x2d, // xorgxquartz:15 -> linux:45 (KEY_X) -> qnum:45
   0x2e, // xorgxquartz:16 -> linux:46 (KEY_C) -> qnum:46
   0x2f, // xorgxquartz:17 -> linux:47 (KEY_V) -> qnum:47
-  0, // xorgxquartz:18 -> linux:170 (KEY_ISO) -> qnum:None
+  0x56, // xorgxquartz:18 -> linux:86 (KEY_102ND) -> qnum:86
   0x30, // xorgxquartz:19 -> linux:48 (KEY_B) -> qnum:48
   0x10, // xorgxquartz:20 -> linux:16 (KEY_Q) -> qnum:16
   0x11, // xorgxquartz:21 -> linux:17 (KEY_W) -> qnum:17

@@ -1,6 +1,6 @@
 //
 // This file is auto-generated from keymaps.csv
-// Database checksum sha256(76d68c10e97d37fe2ea459e210125ae41796253fb217e900bf2983ade13a7920)
+// Database checksum sha256(527727ef96d7103a8d7725a6ed9738812660b5a3f4aec086dd7b587b1ba9fcca)
 // To re-generate, run:
 //   keymap-gen code-map --lang=rust --varname=keymap_xorgkbd2qnum keymaps.csv xorgkbd qnum
 //
@@ -128,90 +128,15 @@ pub static KEYMAP_XORGKBD2QNUM: &[u16] = &[
   0x5f, // xorgkbd:120 -> linux:185 (KEY_F15) -> qnum:95
   0x55, // xorgkbd:121 -> linux:186 (KEY_F16) -> qnum:85
   0x83, // xorgkbd:122 -> linux:187 (KEY_F17) -> qnum:131
-  0, // xorgkbd:123 -> linux:None (unnamed) -> qnum:None
+  0x73, // xorgkbd:123 -> linux:89 (KEY_RO) -> qnum:115
   0, // xorgkbd:124 -> linux:None (unnamed) -> qnum:None
   0, // xorgkbd:125 -> linux:None (unnamed) -> qnum:None
   0x59, // xorgkbd:126 -> linux:117 (KEY_KPEQUAL) -> qnum:89
   0, // xorgkbd:127 -> linux:None (unnamed) -> qnum:None
   0, // xorgkbd:128 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:129 -> linux:None (unnamed) -> qnum:None
+  0x79, // xorgkbd:129 -> linux:92 (KEY_HENKAN) -> qnum:121
   0, // xorgkbd:130 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:131 -> linux:None (unnamed) -> qnum:None
+  0x7b, // xorgkbd:131 -> linux:94 (KEY_MUHENKAN) -> qnum:123
   0, // xorgkbd:132 -> linux:None (unnamed) -> qnum:None
   0x7d, // xorgkbd:133 -> linux:124 (KEY_YEN) -> qnum:125
-  0, // xorgkbd:134 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:135 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:136 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:137 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:138 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:139 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:140 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:141 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:142 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:143 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:144 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:145 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:146 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:147 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:148 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:149 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:150 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:151 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:152 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:153 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:154 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:155 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:156 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:157 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:158 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:159 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:160 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:161 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:162 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:163 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:164 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:165 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:166 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:167 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:168 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:169 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:170 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:171 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:172 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:173 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:174 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:175 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:176 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:177 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:178 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:179 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:180 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:181 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:182 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:183 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:184 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:185 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:186 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:187 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:188 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:189 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:190 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:191 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:192 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:193 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:194 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:195 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:196 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:197 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:198 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:199 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:200 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:201 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:202 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:203 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:204 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:205 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:206 -> linux:None (unnamed) -> qnum:None
-  0, // xorgkbd:207 -> linux:None (unnamed) -> qnum:None
-  0x70, // xorgkbd:208 -> linux:93 (KEY_KATAKANAHIRAGANA) -> qnum:112
 ];

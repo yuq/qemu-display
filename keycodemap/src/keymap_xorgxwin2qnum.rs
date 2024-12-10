@@ -1,6 +1,6 @@
 //
 // This file is auto-generated from keymaps.csv
-// Database checksum sha256(76d68c10e97d37fe2ea459e210125ae41796253fb217e900bf2983ade13a7920)
+// Database checksum sha256(527727ef96d7103a8d7725a6ed9738812660b5a3f4aec086dd7b587b1ba9fcca)
 // To re-generate, run:
 //   keymap-gen code-map --lang=rust --varname=keymap_xorgxwin2qnum keymaps.csv xorgxwin qnum
 //
@@ -134,9 +134,9 @@ pub static KEYMAP_XORGXWIN2QNUM: &[u16] = &[
   0x59, // xorgxwin:126 -> linux:117 (KEY_KPEQUAL) -> qnum:89
   0, // xorgxwin:127 -> linux:None (unnamed) -> qnum:None
   0, // xorgxwin:128 -> linux:None (unnamed) -> qnum:None
-  0, // xorgxwin:129 -> linux:None (unnamed) -> qnum:None
+  0x79, // xorgxwin:129 -> linux:92 (KEY_HENKAN) -> qnum:121
   0, // xorgxwin:130 -> linux:None (unnamed) -> qnum:None
-  0, // xorgxwin:131 -> linux:None (unnamed) -> qnum:None
+  0x7b, // xorgxwin:131 -> linux:94 (KEY_MUHENKAN) -> qnum:123
   0, // xorgxwin:132 -> linux:None (unnamed) -> qnum:None
   0x7d, // xorgxwin:133 -> linux:124 (KEY_YEN) -> qnum:125
   0, // xorgxwin:134 -> linux:None (unnamed) -> qnum:None
@@ -214,4 +214,7 @@ pub static KEYMAP_XORGXWIN2QNUM: &[u16] = &[
   0, // xorgxwin:206 -> linux:None (unnamed) -> qnum:None
   0, // xorgxwin:207 -> linux:None (unnamed) -> qnum:None
   0x70, // xorgxwin:208 -> linux:93 (KEY_KATAKANAHIRAGANA) -> qnum:112
+  0, // xorgxwin:209 -> linux:None (unnamed) -> qnum:None
+  0, // xorgxwin:210 -> linux:None (unnamed) -> qnum:None
+  0x73, // xorgxwin:211 -> linux:89 (KEY_RO) -> qnum:115
 ];

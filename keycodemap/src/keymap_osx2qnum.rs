@@ -1,6 +1,6 @@
 //
 // This file is auto-generated from keymaps.csv
-// Database checksum sha256(76d68c10e97d37fe2ea459e210125ae41796253fb217e900bf2983ade13a7920)
+// Database checksum sha256(527727ef96d7103a8d7725a6ed9738812660b5a3f4aec086dd7b587b1ba9fcca)
 // To re-generate, run:
 //   keymap-gen code-map --lang=rust --varname=keymap_osx2qnum keymaps.csv osx qnum
 //
@@ -15,7 +15,7 @@ pub static KEYMAP_OSX2QNUM: &[u16] = &[
   0x2d, // osx:7 (ANSI_X) -> linux:45 (KEY_X) -> qnum:45
   0x2e, // osx:8 (ANSI_C) -> linux:46 (KEY_C) -> qnum:46
   0x2f, // osx:9 (ANSI_V) -> linux:47 (KEY_V) -> qnum:47
-  0, // osx:10 (ISO_Section) -> linux:170 (KEY_ISO) -> qnum:None
+  0x56, // osx:10 (ISO_Section) -> linux:86 (KEY_102ND) -> qnum:86
   0x30, // osx:11 (ANSI_B) -> linux:48 (KEY_B) -> qnum:48
   0x10, // osx:12 (ANSI_Q) -> linux:16 (KEY_Q) -> qnum:16
   0x11, // osx:13 (ANSI_W) -> linux:17 (KEY_W) -> qnum:17

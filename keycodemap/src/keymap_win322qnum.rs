@@ -1,6 +1,6 @@
 //
 // This file is auto-generated from keymaps.csv
-// Database checksum sha256(76d68c10e97d37fe2ea459e210125ae41796253fb217e900bf2983ade13a7920)
+// Database checksum sha256(527727ef96d7103a8d7725a6ed9738812660b5a3f4aec086dd7b587b1ba9fcca)
 // To re-generate, run:
 //   keymap-gen code-map --lang=rust --varname=keymap_win322qnum keymaps.csv win32 qnum
 //
@@ -26,15 +26,15 @@ pub static KEYMAP_WIN322QNUM: &[u16] = &[
   0x38, // win32:18 (VK_MENU) -> linux:56 (KEY_LEFTALT) -> qnum:56
   0xc6, // win32:19 (VK_PAUSE) -> linux:119 (KEY_PAUSE) -> qnum:198
   0x3a, // win32:20 (VK_CAPITAL) -> linux:58 (KEY_CAPSLOCK) -> qnum:58
-  0x72, // win32:21 (VK_HANGEUL) -> linux:122 (KEY_HANGEUL) -> qnum:114
-  0, // win32:22 (unnamed) -> linux:None (unnamed) -> qnum:None
+  0x72, // win32:21 (VK_IME_ON) -> linux:122 (KEY_HANGEUL) -> qnum:114
+  0x72, // win32:22 (VK_IME_ON) -> linux:122 (KEY_HANGEUL) -> qnum:114
   0, // win32:23 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:24 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0x71, // win32:25 (VK_HANJA) -> linux:123 (KEY_HANJA) -> qnum:113
-  0, // win32:26 (unnamed) -> linux:None (unnamed) -> qnum:None
+  0x71, // win32:25 (VK_IME_OFF) -> linux:123 (KEY_HANJA) -> qnum:113
+  0x71, // win32:26 (VK_IME_OFF) -> linux:123 (KEY_HANJA) -> qnum:113
   0x1, // win32:27 (VK_ESCAPE) -> linux:1 (KEY_ESC) -> qnum:1
-  0, // win32:28 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0, // win32:29 (unnamed) -> linux:None (unnamed) -> qnum:None
+  0x79, // win32:28 (VK_CONVERT) -> linux:92 (KEY_HENKAN) -> qnum:121
+  0x7b, // win32:29 (VK_NONCONVERT) -> linux:94 (KEY_MUHENKAN) -> qnum:123
   0, // win32:30 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:31 (unnamed) -> linux:None (unnamed) -> qnum:None
   0x39, // win32:32 (VK_SPACE) -> linux:57 (KEY_SPACE) -> qnum:57
@@ -225,13 +225,13 @@ pub static KEYMAP_WIN322QNUM: &[u16] = &[
   0, // win32:217 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:218 (unnamed) -> linux:None (unnamed) -> qnum:None
   0x1a, // win32:219 (VK_OEM_4) -> linux:26 (KEY_LEFTBRACE) -> qnum:26
-  0x2b, // win32:220 (VK_OEM_5) -> linux:43 (KEY_BACKSLASH) -> qnum:43
+  0x7d, // win32:220 (VK_OEM_5) -> linux:124 (KEY_YEN) -> qnum:125
   0x1b, // win32:221 (VK_OEM_6) -> linux:27 (KEY_RIGHTBRACE) -> qnum:27
   0x28, // win32:222 (VK_OEM_7) -> linux:40 (KEY_APOSTROPHE) -> qnum:40
   0, // win32:223 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:224 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:225 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0x56, // win32:226 (VK_OEM_102) -> linux:86 (KEY_102ND) -> qnum:86
+  0x73, // win32:226 (VK_OEM_102) -> linux:89 (KEY_RO) -> qnum:115
   0, // win32:227 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:228 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:229 (unnamed) -> linux:None (unnamed) -> qnum:None
@@ -247,7 +247,7 @@ pub static KEYMAP_WIN322QNUM: &[u16] = &[
   0, // win32:239 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:240 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:241 (unnamed) -> linux:None (unnamed) -> qnum:None
-  0, // win32:242 (unnamed) -> linux:None (unnamed) -> qnum:None
+  0x70, // win32:242 (VK_OEM_COPY) -> linux:93 (KEY_KATAKANAHIRAGANA) -> qnum:112
   0, // win32:243 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:244 (unnamed) -> linux:None (unnamed) -> qnum:None
   0, // win32:245 (unnamed) -> linux:None (unnamed) -> qnum:None
