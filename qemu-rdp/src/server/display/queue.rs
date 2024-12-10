@@ -252,7 +252,7 @@ mod tests {
 
     #[test]
     fn test_capacity() {
-        let (tx, _rx) = DisplayQueue::new();
+        let (tx, rx) = DisplayQueue::new();
         crate::utils::block_on(async move {
             let ops = vec![DefaultPointer; QUEUE_CAPACITY];
             for op in ops {
@@ -262,7 +262,10 @@ mod tests {
                 tx.push_update(DefaultPointer, false).await.unwrap();
             })
             .await
-            .unwrap_err()
+            .unwrap_err();
+            for _ in 0..QUEUE_CAPACITY {
+                let _ = rx.recv().await;
+            }
         });
     }
 
