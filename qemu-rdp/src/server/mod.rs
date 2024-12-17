@@ -4,6 +4,7 @@ use ironrdp::server::{Credentials, ServerEvent, TlsIdentityCtx};
 use std::path::PathBuf;
 use tokio::sync::{mpsc::UnboundedSender, oneshot};
 use tracing::{debug, error};
+use zbus::object_server::SignalEmitter;
 
 use ironrdp::server::RdpServer;
 use qemu_display::{zbus, Display};
@@ -39,10 +40,12 @@ impl Server {
             (None, None) => {
                 let mut config_dir = dirs::config_dir().expect("configuration directory");
                 config_dir.push("qemu-rdp");
-                let cert: PathBuf = [config_dir.clone(), PathBuf::from("cert.der")]
+                let cert: PathBuf = [config_dir.clone(), PathBuf::from("server-cert.pem")]
                     .iter()
                     .collect();
-                let key: PathBuf = [config_dir, PathBuf::from("key.der")].iter().collect();
+                let key: PathBuf = [config_dir, PathBuf::from("server-key.pem")]
+                    .iter()
+                    .collect();
                 (cert, key)
             }
             _ => {
@@ -78,21 +81,29 @@ impl Server {
             .build();
 
         let ev = server.event_sender().clone();
+        let dbus_ctrl = DBusCtrl { ev };
+        let dbus_path = "/org/qemu_display/rdp";
+        self.dbus.object_server().at(dbus_path, dbus_ctrl).await?;
+
+        let dbus_iface_ref = self
+            .dbus
+            .object_server()
+            .interface::<_, DBusCtrl>(dbus_path)
+            .await?;
+        let server_ev = server.event_sender().clone();
         let proxy = dbus_display.inner_proxy().clone();
         tokio::spawn(async move {
             use futures_util::StreamExt;
 
             let mut owner_changed = proxy.receive_owner_changed().await.unwrap();
             let _ = owner_changed.next().await;
-            ev.send(ServerEvent::Quit("org.qemu is gone".to_owned()))
+            let dbus_emitter = dbus_iface_ref.signal_emitter();
+            let _ = DBusCtrl::leaving(dbus_emitter, "org.qemu is gone").await;
+            server_ev
+                .send(ServerEvent::Quit("org.qemu is gone".to_owned()))
                 .unwrap();
         });
 
-        let ev = server.event_sender().clone();
-        self.dbus
-            .object_server()
-            .at("/org/qemu_display/rdp", DBusCtrl { ev })
-            .await?;
         self.dbus
             .request_name_with_flags("org.QemuDisplay.RDP", BitFlags::EMPTY)
             .await?;
@@ -136,4 +147,7 @@ impl DBusCtrl {
             Err(zbus::fdo::Error::Failed("Not yet available".into()))
         }
     }
+
+    #[zbus(signal)]
+    async fn leaving(emitter: &SignalEmitter<'_>, reason: &str) -> zbus::Result<()>;
 }
