@@ -671,9 +671,9 @@ checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
 
 [[package]]
 name = "cairo-rs"
-version = "0.20.5"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7fa699e1d7ae691001a811dda5ef0e3e42e1d4119b26426352989df9e94e3e6"
+checksum = "ae50b5510d86cf96ac2370e66d8dc960882f3df179d6a5a1e52bd94a1416c0f7"
 dependencies = [
  "bitflags 2.6.0",
  "cairo-sys-rs",
@@ -683,9 +683,9 @@ dependencies = [
 
 [[package]]
 name = "cairo-sys-rs"
-version = "0.20.0"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "428290f914b9b86089f60f5d8a9f6e440508e1bcff23b25afd51502b0a2da88f"
+checksum = "f18b6bb8e43c7eb0f2aac7976afe0c61b6f5fc2ab7bc4c139537ea56c92290df"
 dependencies = [
  "glib-sys",
  "libc",
@@ -736,7 +736,7 @@ dependencies = [
 [[package]]
 name = "cbindgen"
 version = "0.20.0"
-source = "git+https://gitlab.gnome.org/malureau/rdw.git#4e07cc9b6b57922f9f399710e72dae4b5c7ab0c5"
+source = "git+https://gitlab.gnome.org/malureau/rdw.git#a85a317d0cce3ea22562bc66ebc1a3a0b794b632"
 dependencies = [
  "clap 2.34.0",
  "heck 0.3.3",
@@ -753,9 +753,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.3"
+version = "1.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "27f657647bcff5394bf56c7317665bbf790a137a50eaaa5c6bfbb9e27a518f2d"
+checksum = "9157bbaa6b165880c27a4293a474c91cdcf265cc68cc829bf10be0964a391caf"
 dependencies = [
  "jobserver",
  "libc",
@@ -935,9 +935,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-deque"
-version = "0.8.5"
+version = "0.8.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "613f8cc01fe9cf1a3eb3d7f488fd2fa8388403e97039e2f73692932e291a770d"
+checksum = "9dd111b7b7f7d55b72c0a6ae361660ee5853c9af73f70c3c2ef6858b950e2e51"
 dependencies = [
  "crossbeam-epoch",
  "crossbeam-utils",
@@ -954,9 +954,9 @@ dependencies = [
 
 [[package]]
 name = "crossbeam-utils"
-version = "0.8.20"
+version = "0.8.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22ec99545bb0ed0ea7bb9b8e1e9122ea386ff8a48c0922e43f36d45ab09e0e80"
+checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
 name = "crunchy"
@@ -1547,9 +1547,9 @@ dependencies = [
 
 [[package]]
 name = "gdk-pixbuf"
-version = "0.20.4"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4c29071a9e92337d8270a85cb0510cda4ac478be26d09ad027cc1d081911b19"
+checksum = "b6efc7705f7863d37b12ad6974cbb310d35d054f5108cdc1e69037742f573c4c"
 dependencies = [
  "gdk-pixbuf-sys",
  "gio",
@@ -1559,9 +1559,9 @@ dependencies = [
 
 [[package]]
 name = "gdk-pixbuf-sys"
-version = "0.20.4"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "687343b059b91df5f3fbd87b4307038fa9e647fcc0461d0d3f93e94fee20bf3d"
+checksum = "67f2587c9202bf997476bbba6aaed4f78a11538a2567df002a5f57f5331d0b5c"
 dependencies = [
  "gio-sys",
  "glib-sys",
@@ -1732,9 +1732,9 @@ checksum = "07e28edb80900c19c28f1072f2e8aeca7fa06b23cd4169cefe1af5aa3260783f"
 
 [[package]]
 name = "gio"
-version = "0.20.6"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8826d2a9ad56ce3de1f04bea0bea0daff6f5f1c913cc834996cfea1f9401361c"
+checksum = "a517657589a174be9f60c667f1fec8b7ac82ed5db4ebf56cf073a3b5955d8e2e"
 dependencies = [
  "futures-channel",
  "futures-core",
@@ -1749,15 +1749,15 @@ dependencies = [
 
 [[package]]
 name = "gio-sys"
-version = "0.20.6"
+version = "0.20.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b965df6f3534c84816b5c1a7d9efcb5671ae790822de5abe8e299797039529bc"
+checksum = "8446d9b475730ebef81802c1738d972db42fde1c5a36a627ebc4d665fc87db04"
 dependencies = [
  "glib-sys",
  "gobject-sys",
  "libc",
  "system-deps 7.0.3",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1793,9 +1793,9 @@ dependencies = [
 
 [[package]]
 name = "glib"
-version = "0.20.6"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86bd3e4ee7998ab5a135d900db56930cc19ad16681adf245daff54f618b9d5e1"
+checksum = "f969edf089188d821a30cde713b6f9eb08b20c63fc2e584aba2892a7984a8cc0"
 dependencies = [
  "bitflags 2.6.0",
  "futures-channel",
@@ -1814,9 +1814,9 @@ dependencies = [
 
 [[package]]
 name = "glib-macros"
-version = "0.20.5"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7d21ca27acfc3e91da70456edde144b4ac7c36f78ee77b10189b3eb4901c156"
+checksum = "715601f8f02e71baef9c1f94a657a9a77c192aea6097cf9ae7e5e177cd8cde68"
 dependencies = [
  "heck 0.5.0",
  "proc-macro-crate",
@@ -1827,9 +1827,9 @@ dependencies = [
 
 [[package]]
 name = "glib-sys"
-version = "0.20.6"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3d0b1827e8621fc42c0dfb228e5d57ff6a71f9699e666ece8113f979ad87c2de"
+checksum = "b360ff0f90d71de99095f79c526a5888c9c92fc9ee1b19da06c6f5e75f0c2a53"
 dependencies = [
  "libc",
  "system-deps 7.0.3",
@@ -1855,9 +1855,9 @@ dependencies = [
 
 [[package]]
 name = "gobject-sys"
-version = "0.20.4"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4c674d2ff8478cf0ec29d2be730ed779fef54415a2fb4b565c52def62696462"
+checksum = "67a56235e971a63bfd75abb13ef70064e1346388723422a68580d8a6fbac6423"
 dependencies = [
  "glib-sys",
  "libc",
@@ -1866,9 +1866,9 @@ dependencies = [
 
 [[package]]
 name = "graphene-rs"
-version = "0.20.4"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f53144c7fe78292705ff23935f1477d511366fb2f73c43d63b37be89076d2fe"
+checksum = "f39d3bcd2e24fd9c2874a56f277b72c03e728de9bdc95a8d4ef4c962f10ced98"
 dependencies = [
  "glib",
  "graphene-sys",
@@ -1877,9 +1877,9 @@ dependencies = [
 
 [[package]]
 name = "graphene-sys"
-version = "0.20.4"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e741797dc5081e59877a4d72c442c72d61efdd99161a0b1c1b29b6b988934b99"
+checksum = "11a68d39515bf340e879b72cecd4a25c1332557757ada6e8aba8654b4b81d23a"
 dependencies = [
  "glib-sys",
  "libc",
@@ -2181,11 +2181,11 @@ dependencies = [
 
 [[package]]
 name = "home"
-version = "0.5.9"
+version = "0.5.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e3d1354bf6b7235cb4a0576c2619fd4ed18183f689b12b006a0ee7329eeff9a5"
+checksum = "589533453244b0995c858700322199b2becb13b627df2851f64a2775d024abcf"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2432,8 +2432,7 @@ checksum = "06432fb54d3be7964ecd3649233cddf80db2832f47fec34c01f65b3d9d774983"
 
 [[package]]
 name = "ironrdp"
-version = "0.7.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.7.2"
 dependencies = [
  "ironrdp-cliprdr",
  "ironrdp-connector",
@@ -2447,8 +2446,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-acceptor"
-version = "0.2.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.2.1"
 dependencies = [
  "ironrdp-async",
  "ironrdp-connector",
@@ -2460,8 +2458,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-ainput"
-version = "0.1.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.1"
 dependencies = [
  "bitflags 2.6.0",
  "ironrdp-core",
@@ -2472,8 +2469,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-async"
-version = "0.2.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.2.1"
 dependencies = [
  "bytes",
  "ironrdp-connector",
@@ -2484,8 +2480,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-cliprdr"
-version = "0.1.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.1"
 dependencies = [
  "bitflags 2.6.0",
  "ironrdp-core",
@@ -2497,8 +2492,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-connector"
-version = "0.2.1"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.2.2"
 dependencies = [
  "ironrdp-core",
  "ironrdp-error",
@@ -2515,16 +2509,14 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-core"
-version = "0.1.1"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.2"
 dependencies = [
  "ironrdp-error",
 ]
 
 [[package]]
 name = "ironrdp-displaycontrol"
-version = "0.1.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.1"
 dependencies = [
  "ironrdp-core",
  "ironrdp-dvc",
@@ -2535,8 +2527,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-dvc"
-version = "0.1.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.1"
 dependencies = [
  "ironrdp-core",
  "ironrdp-pdu",
@@ -2547,13 +2538,11 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-error"
-version = "0.1.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.1"
 
 [[package]]
 name = "ironrdp-graphics"
-version = "0.1.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.1"
 dependencies = [
  "bit_field",
  "bitflags 2.6.0",
@@ -2569,8 +2558,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-pdu"
-version = "0.1.1"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.2"
 dependencies = [
  "bit_field",
  "bitflags 2.6.0",
@@ -2592,8 +2580,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-rdpsnd"
-version = "0.1.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.1"
 dependencies = [
  "bitflags 2.6.0",
  "ironrdp-core",
@@ -2604,8 +2591,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-server"
-version = "0.3.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.3.1"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2631,8 +2617,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-svc"
-version = "0.1.1"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.1.2"
 dependencies = [
  "bitflags 2.6.0",
  "ironrdp-core",
@@ -2641,8 +2626,7 @@ dependencies = [
 
 [[package]]
 name = "ironrdp-tokio"
-version = "0.2.0"
-source = "git+https://github.com/Devolutions/IronRDP#fc4951780c023ae211b326de0113ff1470e4b324"
+version = "0.2.1"
 dependencies = [
  "bytes",
  "ironrdp-async",
@@ -3223,9 +3207,9 @@ dependencies = [
 
 [[package]]
 name = "pango"
-version = "0.20.6"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71e34e7ca2c52e3933d7e5251409a82b83725fa9d6d48fbdaacec056b3a0554a"
+checksum = "9e89bd74250a03a05cec047b43465469102af803be2bf5e5a1088f8b8455e087"
 dependencies = [
  "gio",
  "glib",
@@ -3235,9 +3219,9 @@ dependencies = [
 
 [[package]]
 name = "pango-sys"
-version = "0.20.4"
+version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84fd65917bf12f06544ae2bbc200abf9fc0a513a5a88a0fa81013893aef2b838"
+checksum = "71787e0019b499a5eda889279e4adb455a4f3fdd6870cd5ab7f4a5aa25df6699"
 dependencies = [
  "glib-sys",
  "gobject-sys",
@@ -3912,12 +3896,12 @@ dependencies = [
 [[package]]
 name = "rdw-keycodemap"
 version = "0.1.0"
-source = "git+https://gitlab.gnome.org/malureau/rdw.git#4e07cc9b6b57922f9f399710e72dae4b5c7ab0c5"
+source = "git+https://gitlab.gnome.org/malureau/rdw.git#a85a317d0cce3ea22562bc66ebc1a3a0b794b632"
 
 [[package]]
 name = "rdw4"
 version = "0.1.0"
-source = "git+https://gitlab.gnome.org/malureau/rdw.git#4e07cc9b6b57922f9f399710e72dae4b5c7ab0c5"
+source = "git+https://gitlab.gnome.org/malureau/rdw.git#a85a317d0cce3ea22562bc66ebc1a3a0b794b632"
 dependencies = [
  "cargo_metadata",
  "cbindgen",
@@ -3947,9 +3931,9 @@ dependencies = [
 
 [[package]]
 name = "redox_syscall"
-version = "0.5.7"
+version = "0.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b6dfecf2c74bce2466cabf93f6664d6998a69eb21e39f4207930065b27b771f"
+checksum = "03a862b389f93e68874fbf580b9de08dd02facb9a788ebadaf4a3fd33cf58834"
 dependencies = [
  "bitflags 2.6.0",
 ]
@@ -4116,9 +4100,9 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.23.19"
+version = "0.23.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "934b404430bb06b3fae2cba809eb45a1ab1aecd64491213d7c3301b88393f8d1"
+checksum = "5065c3f250cbd332cd894be57c40fa52387247659b14a2d6041d121547903b1b"
 dependencies = [
  "aws-lc-rs",
  "log 0.4.22",
@@ -4140,9 +4124,9 @@ dependencies = [
 
 [[package]]
 name = "rustls-pki-types"
-version = "1.10.0"
+version = "1.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16f1201b3c9a7ee8039bcadc17b7e605e2945b27eee7631788c1bd2b0643674b"
+checksum = "d2bf47e6ff922db3825eb750c4e2ff784c6ff8fb9e13046ef6a1d1c5401b0b37"
 
 [[package]]
 name = "rustls-webpki"
@@ -4190,18 +4174,18 @@ dependencies = [
 
 [[package]]
 name = "semver"
-version = "1.0.23"
+version = "1.0.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "61697e0a1c7e512e84a621326239844a24d8207b4669b41bc18b32ea5cbf988b"
+checksum = "3cb6eb87a131f756572d7fb904f6e7b68633f09cca868c5df1c4b8d1a694bbba"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "serde"
-version = "1.0.215"
+version = "1.0.216"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6513c1ad0b11a9376da888e3e0baa0077f1aed55c17f50e7b2397136129fb88f"
+checksum = "0b9781016e935a97e8beecf0c933758c97a5520d32930e460142b4cd80c6338e"
 dependencies = [
  "serde_derive",
 ]
@@ -4217,9 +4201,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.215"
+version = "1.0.216"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad1e866f866923f252f05c889987993144fb74e722403468a4ebd70c3cd756c0"
+checksum = "46f859dbbf73865c6627ed570e78961cd3ac92407a2d117204c49232485da55e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5705,9 +5689,9 @@ dependencies = [
 
 [[package]]
 name = "zbus"
-version = "5.1.1"
+version = "5.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1162094dc63b1629fcc44150bcceeaa80798cd28bcbe7fa987b65a034c258608"
+checksum = "fb67eadba43784b6fb14857eba0d8fc518686d3ee537066eb6086dc318e2c8a1"
 dependencies = [
  "async-broadcast",
  "async-executor",
@@ -5742,9 +5726,9 @@ dependencies = [
 
 [[package]]
 name = "zbus_macros"
-version = "5.1.1"
+version = "5.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2cd2dcdce3e2727f7d74b7e33b5a89539b3cc31049562137faf7ae4eb86cd16d"
+checksum = "2c9d49ebc960ceb660f2abe40a5904da975de6986f2af0d7884b39eec6528c57"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -5868,9 +5852,9 @@ dependencies = [
 
 [[package]]
 name = "zune-jpeg"
-version = "0.4.13"
+version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16099418600b4d8f028622f73ff6e3deaabdff330fb9a2a131dea781ee8b0768"
+checksum = "99a5bab8d7dedf81405c4bb1f2b83ea057643d9cb28778cea9eecddeedd2e028"
 dependencies = [
  "zune-core",
 ]
