@@ -88,16 +88,18 @@ impl ScanoutMap {
 }
 
 impl ScanoutMmap {
-    pub fn as_ref(&self) -> &[u8] {
-        self.mmap.as_ref()
-    }
-
     pub fn stride(&self) -> u32 {
         self.scanout.stride
     }
 
     pub fn format(&self) -> u32 {
         self.scanout.format
+    }
+}
+
+impl AsRef<[u8]> for ScanoutMmap {
+    fn as_ref(&self) -> &[u8] {
+        self.mmap.as_ref()
     }
 }
 
