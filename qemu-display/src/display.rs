@@ -196,7 +196,7 @@ impl<'d> Display<'d> {
             fdname: "fdname".into(),
         })?;
 
-        let conn = zbus::ConnectionBuilder::unix_stream(p1)
+        let conn = zbus::connection::Builder::unix_stream(p1)
             .p2p()
             .build()
             .await?;
