@@ -25,11 +25,11 @@ enum State {
 
 #[derive(Debug)]
 pub struct Inner {
-    audio: Audio,
     state: State,
     start_time: Instant,
     ev_sender: Option<mpsc::UnboundedSender<ServerEvent>>,
     rdp_started: bool,
+    _audio: Option<Audio>,
 }
 
 #[derive(Debug)]
@@ -170,26 +170,22 @@ impl SoundServerFactory for SoundHandler {
 
 impl SoundHandler {
     pub async fn connect(display: &Display<'_>) -> Result<Self> {
-        let audio =
+        let mut audio =
             Audio::new(display.connection(), Some(display.destination().to_owned())).await?;
         let inner = Arc::new(Mutex::new(Inner {
             start_time: Instant::now(),
             state: State::Init,
             ev_sender: None,
-            audio,
             rdp_started: false,
+            _audio: None,
         }));
 
         // TODO: register only after connection?
         let handler = DBusHandler {
             inner: inner.clone(),
         };
-        inner
-            .lock()
-            .unwrap()
-            .audio
-            .register_out_listener(handler)
-            .await?;
+        audio.register_out_listener(handler).await?;
+        inner.lock().unwrap()._audio = Some(audio);
 
         Ok(Self { inner })
     }

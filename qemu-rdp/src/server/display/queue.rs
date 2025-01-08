@@ -63,7 +63,7 @@ impl Drop for Receiver {
 }
 
 impl DisplayQueue {
-    pub(crate) fn new() -> (Sender, Receiver) {
+    pub(crate) fn channel() -> (Sender, Receiver) {
         let channel = Arc::new(DisplayQueue {
             queue: Mutex::new(VecDeque::with_capacity(QUEUE_CAPACITY)),
             notify_producer: Notify::new(),
@@ -229,7 +229,7 @@ mod tests {
 
     #[test]
     fn test_send_recv() {
-        let (tx, rx) = DisplayQueue::new();
+        let (tx, rx) = DisplayQueue::channel();
         crate::utils::block_on(async move {
             let tx_task = tokio::spawn(async move {
                 let ops = vec![
@@ -252,7 +252,7 @@ mod tests {
 
     #[test]
     fn test_capacity() {
-        let (tx, rx) = DisplayQueue::new();
+        let (tx, rx) = DisplayQueue::channel();
         crate::utils::block_on(async move {
             let ops = vec![DefaultPointer; QUEUE_CAPACITY];
             for op in ops {
@@ -271,7 +271,7 @@ mod tests {
 
     #[test]
     fn test_close() {
-        let (tx, rx) = DisplayQueue::new();
+        let (tx, rx) = DisplayQueue::channel();
         crate::utils::block_on(async move {
             let tx_task = tokio::spawn(async move {
                 drop(tx);
@@ -286,7 +286,7 @@ mod tests {
 
     #[test]
     fn test_resize() {
-        let (tx, rx) = DisplayQueue::new();
+        let (tx, rx) = DisplayQueue::channel();
         crate::utils::block_on(async move {
             let ops = vec![
                 Resize(DesktopSize {
@@ -333,7 +333,7 @@ mod tests {
 
     #[test]
     fn test_bitmap() {
-        let (tx, rx) = DisplayQueue::new();
+        let (tx, rx) = DisplayQueue::channel();
         crate::utils::block_on(async move {
             let ops = vec![
                 Bitmap(BitmapUpdate {

@@ -47,7 +47,7 @@ impl DisplayHandler {
     }
 
     async fn listen(&self) -> Result<DisplayUpdates> {
-        let (sender, receiver) = DisplayQueue::new();
+        let (sender, receiver) = DisplayQueue::channel();
         let (width, height) = (
             self.console.width().await? as _,
             self.console.height().await? as _,
