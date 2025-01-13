@@ -1,9 +1,10 @@
 #[cfg(windows)]
-use crate::win32::{Fd, Mmap};
+use crate::win32::Fd;
 use derivative::Derivative;
-#[cfg(unix)]
 use memmap2::Mmap;
 use std::ops::Drop;
+#[cfg(windows)]
+use std::os::windows::io::{AsRawHandle, FromRawHandle, OwnedHandle};
 #[cfg(unix)]
 use std::os::{
     fd::{AsFd, OwnedFd},
@@ -41,7 +42,7 @@ pub struct ScanoutMap {
     #[cfg(unix)]
     pub fd: OwnedFd,
     #[cfg(windows)]
-    pub handle: u64,
+    pub handle: OwnedHandle,
     pub offset: u32,
     pub width: u32,
     pub height: u32,
@@ -52,9 +53,6 @@ pub struct ScanoutMap {
 #[derive(Debug)]
 pub struct ScanoutMmap {
     scanout: ScanoutMap,
-    #[cfg(unix)]
-    mmap: Mmap,
-    #[cfg(windows)]
     mmap: Mmap,
 }
 
@@ -64,20 +62,15 @@ impl ScanoutMap {
         let offset = self.offset;
 
         #[cfg(unix)]
-        let mmap = {
-            let fd = self.fd.as_raw_fd();
-            unsafe {
-                memmap2::MmapOptions::new()
-                    .len(len)
-                    .offset(offset.into())
-                    .map(fd)
-            }?
-        };
-
+        let desc = self.fd.as_raw_fd();
         #[cfg(windows)]
-        let mmap = {
-            let handle = windows::Win32::Foundation::HANDLE(self.handle as _); // taking ownership
-            Mmap::new(handle, offset.try_into().unwrap(), len)?
+        let desc = self.handle.as_raw_handle();
+
+        let mmap = unsafe {
+            memmap2::MmapOptions::new()
+                .len(len)
+                .offset(offset.into())
+                .map(desc)?
         };
 
         Ok(ScanoutMmap {
@@ -426,6 +419,7 @@ impl<H: ConsoleListenerMapHandler> ConsoleListenerMap<H> {
         stride: u32,
         format: u32,
     ) -> zbus::fdo::Result<()> {
+        let handle = unsafe { OwnedHandle::from_raw_handle(handle as _) };
         let map = ScanoutMap {
             handle,
             offset,
