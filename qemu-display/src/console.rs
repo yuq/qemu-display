@@ -113,12 +113,15 @@ impl Console {
             &p0,
         )?;
         self.proxy.register_listener(p0).await?;
-        let c = zbus::connection::Builder::unix_stream(p1)
+        let conn = zbus::connection::Builder::unix_stream(p1)
             .p2p()
-            .serve_at("/org/qemu/Display1/Listener", ConsoleListener::new(handler))?
+            .serve_at("/org/qemu/Display1/Listener", ConsoleListener::new(handler))?;
+        #[cfg(windows)]
+        let conn = conn.auth_mechanism(zbus::AuthMechanism::Anonymous);
+        let conn = conn
             .build()
             .await?;
-        *self.listener.write().unwrap() = Some(c);
+        *self.listener.write().unwrap() = Some(conn);
         Ok(())
     }
 

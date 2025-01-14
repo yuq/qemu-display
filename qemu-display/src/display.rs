@@ -196,10 +196,10 @@ impl<'d> Display<'d> {
             fdname: "fdname".into(),
         })?;
 
-        let conn = zbus::connection::Builder::unix_stream(p1)
-            .p2p()
-            .build()
-            .await?;
+        let conn = zbus::connection::Builder::unix_stream(p1).p2p();
+        #[cfg(windows)]
+        let conn = conn.auth_mechanism(zbus::AuthMechanism::Anonymous);
+        let conn = conn.build().await?;
 
         Self::new(
             &conn,

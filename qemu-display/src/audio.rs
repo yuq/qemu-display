@@ -269,15 +269,15 @@ impl Audio {
             &p0,
         )?;
         self.proxy.register_out_listener(p0).await?;
-        let c = zbus::connection::Builder::unix_stream(p1)
-            .p2p()
+        let conn = zbus::connection::Builder::unix_stream(p1).p2p()
             .serve_at(
                 "/org/qemu/Display1/AudioOutListener",
                 AudioOutListener { handler },
-            )?
-            .build()
-            .await?;
-        self.out_listener.replace(c);
+            )?;
+        #[cfg(windows)]
+        let conn = conn.auth_mechanism(zbus::AuthMechanism::Anonymous);
+        let conn = conn.build().await?;
+        self.out_listener.replace(conn);
         Ok(())
     }
 
@@ -289,15 +289,16 @@ impl Audio {
             &p0,
         )?;
         self.proxy.register_in_listener(p0).await?;
-        let c = zbus::connection::Builder::unix_stream(p1)
+        let conn = zbus::connection::Builder::unix_stream(p1)
             .p2p()
             .serve_at(
                 "/org/qemu/Display1/AudioInListener",
                 AudioInListener { handler },
-            )?
-            .build()
-            .await?;
-        self.in_listener.replace(c);
+            )?;
+        #[cfg(windows)]
+        let conn = conn.auth_mechanism(zbus::AuthMechanism::Anonymous);
+        let conn = conn.build().await?;
+        self.in_listener.replace(conn);
         Ok(())
     }
 }
