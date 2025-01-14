@@ -1,9 +1,13 @@
 use std::io;
+use tracing::warn;
 
 use windows::Win32::{
     Foundation::{CloseHandle, HANDLE},
     Networking::WinSock::{WSADuplicateSocketW, SOCKET, WSAPROTOCOL_INFOW},
-    System::Threading::PROCESS_ACCESS_RIGHTS,
+    System::{
+        Memory::{MapViewOfFile, UnmapViewOfFile, FILE_MAP_READ, MEMORY_MAPPED_VIEW_ADDRESS},
+        Threading::PROCESS_ACCESS_RIGHTS,
+    },
 };
 
 #[cfg(feature = "qmp")]
@@ -117,4 +121,50 @@ pub(crate) fn unix_stream_get_peer_pid(stream: &UnixStream) -> Result<u32, std::
     }
 
     Ok(ret)
+}
+
+#[derive(Debug)]
+pub(crate) struct Mmap {
+    handle: HANDLE,
+    ptr: MEMORY_MAPPED_VIEW_ADDRESS,
+    offset: isize,
+    size: usize,
+}
+
+#[cfg(windows)]
+impl Drop for Mmap {
+    fn drop(&mut self) {
+        unsafe {
+            if let Err(err) = UnmapViewOfFile(self.ptr) {
+                warn!("error while unmap: {}", err);
+            }
+            if let Err(err) = CloseHandle(self.handle) {
+                warn!("error while closing mmap: {}", err);
+            }
+        }
+    }
+}
+
+#[cfg(windows)]
+impl Mmap {
+    // FIXME: remove and replace with memmap2, use offset properly
+    // https://github.com/RazrFalcon/memmap2-rs/issues/138
+    pub(crate) fn new(handle: HANDLE, offset: usize, size: usize) -> std::io::Result<Self> {
+        let ptr = unsafe { MapViewOfFile(handle, FILE_MAP_READ, 0, 0, offset + size) };
+        if ptr.Value.is_null() {
+            return Err(io::Error::last_os_error());
+        }
+        Ok(Self {
+            handle,
+            ptr,
+            offset: offset.try_into().unwrap(),
+            size,
+        })
+    }
+
+    pub(crate) fn as_ref(&self) -> &[u8] {
+        unsafe {
+            std::slice::from_raw_parts(self.ptr.Value.cast::<u8>().offset(self.offset), self.size)
+        }
+    }
 }

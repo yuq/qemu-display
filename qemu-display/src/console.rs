@@ -118,9 +118,7 @@ impl Console {
             .serve_at("/org/qemu/Display1/Listener", ConsoleListener::new(handler))?;
         #[cfg(windows)]
         let conn = conn.auth_mechanism(zbus::AuthMechanism::Anonymous);
-        let conn = conn
-            .build()
-            .await?;
+        let conn = conn.build().await?;
         *self.listener.write().unwrap() = Some(conn);
         Ok(())
     }

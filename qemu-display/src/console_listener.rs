@@ -1,6 +1,7 @@
 #[cfg(windows)]
-use crate::win32::Fd;
+use crate::win32::{Fd, Mmap};
 use derivative::Derivative;
+#[cfg(unix)]
 use memmap2::Mmap;
 use std::ops::Drop;
 #[cfg(windows)]
@@ -66,11 +67,19 @@ impl ScanoutMap {
         #[cfg(windows)]
         let desc = self.handle.as_raw_handle();
 
+        #[cfg(unix)]
         let mmap = unsafe {
             memmap2::MmapOptions::new()
                 .len(len)
                 .offset(offset.into())
                 .map(desc)?
+        };
+
+        #[cfg(windows)]
+        let mmap = {
+            use windows::Win32::Foundation::HANDLE;
+            let handle = HANDLE(desc as _);
+            Mmap::new(handle, offset.try_into().unwrap(), len)?
         };
 
         Ok(ScanoutMmap {
