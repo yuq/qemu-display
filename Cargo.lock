@@ -3670,7 +3670,7 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uds_windows",
- "usbredirhost",
+ "usbredirhost 0.4.1",
  "windows 0.59.0",
  "zbus",
 ]
@@ -3923,7 +3923,7 @@ dependencies = [
  "log 0.4.25",
  "rdw-keycodemap",
  "system-deps 7.0.3",
- "usbredirhost",
+ "usbredirhost 0.2.0",
  "wayland-protocols",
  "windows 0.56.0",
  "x11",
@@ -4888,8 +4888,20 @@ checksum = "4195cf91577a3e40abf950e0e5f55235cbc123f81f851a0dec93f1c8eac92897"
 dependencies = [
  "libc",
  "rusb",
- "usbredirhost-sys",
- "usbredirparser",
+ "usbredirhost-sys 0.2.0",
+ "usbredirparser 0.2.0",
+]
+
+[[package]]
+name = "usbredirhost"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4b2a271622116011c25edfb4d657a504f83b2760d982b027eae20104f0eab993"
+dependencies = [
+ "libc",
+ "rusb",
+ "usbredirhost-sys 0.4.0",
+ "usbredirparser 0.4.0",
 ]
 
 [[package]]
@@ -4900,7 +4912,18 @@ checksum = "26a8a864f2eaadf4e1bbed5ecc257c39ade964780fde47db8cccd5858e4ad90b"
 dependencies = [
  "libusb1-sys",
  "pkg-config",
- "usbredirparser-sys",
+ "usbredirparser-sys 0.2.0",
+]
+
+[[package]]
+name = "usbredirhost-sys"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d72ee2ae489b7e64fa54d0feaa422423ab9152b366f4c469b13dd3d61a564b6f"
+dependencies = [
+ "libusb1-sys",
+ "system-deps 7.0.3",
+ "usbredirparser-sys 0.4.0",
 ]
 
 [[package]]
@@ -4910,7 +4933,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ea8c0e7051e88be2abdec96d35779d84e0e344934e513a310f537db30aca3df"
 dependencies = [
  "libc",
- "usbredirparser-sys",
+ "usbredirparser-sys 0.2.0",
+]
+
+[[package]]
+name = "usbredirparser"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c9e0730d51a14902d0111ef9107eecb5cdebd77be565b13e9be8c1ceaae59a8b"
+dependencies = [
+ "libc",
+ "usbredirparser-sys 0.4.0",
 ]
 
 [[package]]
@@ -4920,6 +4953,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fa238be1fc2cc1f405db6f1d42389c44e968c4c1841d63d7cb8a1583a05c9576"
 dependencies = [
  "pkg-config",
+]
+
+[[package]]
+name = "usbredirparser-sys"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "97e3d90edb6a3053b6b346ed9fbff13a03f7c1bfc9f872b8d48167d87a3632c0"
+dependencies = [
+ "system-deps 7.0.3",
 ]
 
 [[package]]
