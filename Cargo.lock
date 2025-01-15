@@ -259,7 +259,7 @@ dependencies = [
  "futures-executor",
  "futures-util",
  "libc",
- "log 0.4.22",
+ "log 0.4.25",
  "pin-utils",
  "pkg-config",
  "tokio",
@@ -401,7 +401,7 @@ dependencies = [
  "futures-lite",
  "gloo-timers",
  "kv-log-macro",
- "log 0.4.22",
+ "log 0.4.25",
  "memchr",
  "once_cell",
  "pin-project-lite",
@@ -464,7 +464,7 @@ checksum = "6678909d8c5d46a42abcf571271e15fdbc0a225e3646cf23762cd415046c78bf"
 dependencies = [
  "anyhow",
  "arrayvec",
- "log 0.4.22",
+ "log 0.4.25",
  "nom",
  "num-rational",
  "v_frame",
@@ -543,13 +543,13 @@ version = "0.69.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "271383c67ccabffb7381723dea0672a673f292304fcb45c01cc648c7a8d58088"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "cexpr",
  "clang-sys",
  "itertools 0.12.1",
  "lazy_static",
  "lazycell",
- "log 0.4.22",
+ "log 0.4.25",
  "prettyplease",
  "proc-macro2",
  "quote",
@@ -574,9 +574,9 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "bitflags"
-version = "2.7.0"
+version = "2.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1be3f42a67d6d345ecd59f675f3f012d6974981560836e938c22b424b85ce1be"
+checksum = "8f68f53c83ab957f72c32642f3868eec03eb974d1fb82e453128456482613d36"
 
 [[package]]
 name = "bitstream-io"
@@ -675,7 +675,7 @@ version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ae50b5510d86cf96ac2370e66d8dc960882f3df179d6a5a1e52bd94a1416c0f7"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "cairo-sys-rs",
  "glib",
  "libc",
@@ -736,12 +736,12 @@ dependencies = [
 [[package]]
 name = "cbindgen"
 version = "0.20.0"
-source = "git+https://gitlab.gnome.org/malureau/rdw.git#1820bd654e618695afdf61d06cb3f90afabf9998"
+source = "git+https://gitlab.gnome.org/malureau/rdw.git#e8b00680a6c2218ef3ccdc23a1e1c4fe3ede53c5"
 dependencies = [
  "clap 2.34.0",
  "heck 0.3.3",
  "indexmap 1.9.3",
- "log 0.4.22",
+ "log 0.4.25",
  "proc-macro2",
  "quote",
  "serde",
@@ -1274,7 +1274,7 @@ checksum = "4cd405aab171cb85d6735e5c8d9db038c17d3ca007a4d2c25f337935c3d90580"
 dependencies = [
  "humantime",
  "is-terminal",
- "log 0.4.22",
+ "log 0.4.25",
  "regex",
  "termcolor",
 ]
@@ -1776,7 +1776,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7a795170cbd85b5a7baa58d6d7525cae6a03e486859860c220f7ebbbdd379d0a"
 dependencies = [
  "khronos_api 2.2.0",
- "log 0.4.22",
+ "log 0.4.25",
  "xml-rs 0.7.0",
 ]
 
@@ -1787,7 +1787,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a95dfc23a2b4a9a2f5ab41d194f8bfda3cabec42af4e39f08c339eb2a0c124d"
 dependencies = [
  "khronos_api 3.1.0",
- "log 0.4.22",
+ "log 0.4.25",
  "xml-rs 0.8.25",
 ]
 
@@ -1797,7 +1797,7 @@ version = "0.20.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f969edf089188d821a30cde713b6f9eb08b20c63fc2e584aba2892a7984a8cc0"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "futures-channel",
  "futures-core",
  "futures-executor",
@@ -2460,7 +2460,7 @@ dependencies = [
 name = "ironrdp-ainput"
 version = "0.1.1"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "ironrdp-core",
  "ironrdp-dvc",
  "num-derive",
@@ -2482,7 +2482,7 @@ dependencies = [
 name = "ironrdp-cliprdr"
 version = "0.1.1"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "ironrdp-core",
  "ironrdp-pdu",
  "ironrdp-svc",
@@ -2545,7 +2545,7 @@ name = "ironrdp-graphics"
 version = "0.1.1"
 dependencies = [
  "bit_field",
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "bitvec",
  "byteorder 1.5.0",
  "ironrdp-core",
@@ -2561,7 +2561,7 @@ name = "ironrdp-pdu"
 version = "0.1.2"
 dependencies = [
  "bit_field",
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "byteorder 1.5.0",
  "der-parser",
  "ironrdp-core",
@@ -2582,7 +2582,7 @@ dependencies = [
 name = "ironrdp-rdpsnd"
 version = "0.1.1"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "ironrdp-core",
  "ironrdp-pdu",
  "ironrdp-svc",
@@ -2619,7 +2619,7 @@ dependencies = [
 name = "ironrdp-svc"
 version = "0.1.2"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "ironrdp-core",
  "ironrdp-pdu",
 ]
@@ -2743,7 +2743,7 @@ version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0de8b303297635ad57c9f5059fd9cee7a47f8e8daa09df0fcd07dd39fb22977f"
 dependencies = [
- "log 0.4.22",
+ "log 0.4.25",
 ]
 
 [[package]]
@@ -2805,7 +2805,7 @@ version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0ff37bd590ca25063e35af745c343cb7a0271906fb7b37e4813e8f79f00268d"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "libc",
 ]
 
@@ -2849,14 +2849,14 @@ version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e19e8d5c34a3e0e2223db8e060f9e8264aeeb5c5fc64a4ee9965c062211c024b"
 dependencies = [
- "log 0.4.22",
+ "log 0.4.25",
 ]
 
 [[package]]
 name = "log"
-version = "0.4.22"
+version = "0.4.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
+checksum = "04cbf5b083de1c7e0222a7a51dbfdba1cbe1c6ab0b15e29fff3f6c077fd9cd9f"
 dependencies = [
  "value-bag",
 ]
@@ -2987,7 +2987,7 @@ version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71e2746dc3a24dd78b3cfcb7be93368c6de9963d30f43a6a73998a9cf4b17b46"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "cfg-if",
  "cfg_aliases",
  "libc",
@@ -3374,9 +3374,9 @@ dependencies = [
 
 [[package]]
 name = "picky-asn1-x509"
-version = "0.14.1"
+version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f702973074c654cef724d7430e2852acdb8b0e897ed9c4120727446a1bda1464"
+checksum = "6dc93bbf01e4b1c9f426c3fb315bc31dc431a32c5ba7c7cf242a967869e9c0cb"
 dependencies = [
  "base64",
  "num-bigint-dig",
@@ -3531,7 +3531,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "865724d4dbe39d9f3dd3b52b88d859d66bcb2d6a0acfd5ea68a65fb66d4bdc1c"
 dependencies = [
  "env_logger",
- "log 0.4.22",
+ "log 0.4.25",
 ]
 
 [[package]]
@@ -3596,7 +3596,7 @@ version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7b047adab56acc4948d4b9b58693c1f33fd13efef2d6bb5f0f66a47436ceada8"
 dependencies = [
- "log 0.4.22",
+ "log 0.4.25",
  "qapi-qmp",
  "qapi-spec",
  "serde",
@@ -3705,7 +3705,7 @@ dependencies = [
  "futures",
  "futures-util",
  "keycodemap",
- "log 0.4.22",
+ "log 0.4.25",
  "once_cell",
  "pretty_env_logger",
  "qemu-display",
@@ -3737,7 +3737,7 @@ name = "qemu-vte"
 version = "0.1.0"
 dependencies = [
  "futures",
- "log 0.4.22",
+ "log 0.4.25",
  "once_cell",
  "pretty_env_logger",
  "qemu-display",
@@ -3831,7 +3831,7 @@ dependencies = [
  "itertools 0.12.1",
  "libc",
  "libfuzzer-sys",
- "log 0.4.22",
+ "log 0.4.25",
  "maybe-rayon",
  "new_debug_unreachable",
  "noop_proc_macro",
@@ -3896,12 +3896,12 @@ dependencies = [
 [[package]]
 name = "rdw-keycodemap"
 version = "0.1.0"
-source = "git+https://gitlab.gnome.org/malureau/rdw.git#1820bd654e618695afdf61d06cb3f90afabf9998"
+source = "git+https://gitlab.gnome.org/malureau/rdw.git#e8b00680a6c2218ef3ccdc23a1e1c4fe3ede53c5"
 
 [[package]]
 name = "rdw4"
 version = "0.1.0"
-source = "git+https://gitlab.gnome.org/malureau/rdw.git#1820bd654e618695afdf61d06cb3f90afabf9998"
+source = "git+https://gitlab.gnome.org/malureau/rdw.git#e8b00680a6c2218ef3ccdc23a1e1c4fe3ede53c5"
 dependencies = [
  "cargo_metadata",
  "cbindgen",
@@ -3920,7 +3920,7 @@ dependencies = [
  "khronos-egl",
  "libc",
  "libloading",
- "log 0.4.22",
+ "log 0.4.25",
  "rdw-keycodemap",
  "system-deps 7.0.3",
  "usbredirhost",
@@ -3935,7 +3935,7 @@ version = "0.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "03a862b389f93e68874fbf580b9de08dd02facb9a788ebadaf4a3fd33cf58834"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
 ]
 
 [[package]]
@@ -4091,7 +4091,7 @@ version = "0.38.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a78891ee6bf2340288408954ac787aa063d8e8817e9f53abb37c695c6d834ef6"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "errno",
  "libc",
  "linux-raw-sys",
@@ -4105,7 +4105,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8f287924602bf649d949c63dc8ac8b235fa5387d394020705b80c4eb597ce5b8"
 dependencies = [
  "aws-lc-rs",
- "log 0.4.22",
+ "log 0.4.25",
  "once_cell",
  "rustls-pki-types",
  "rustls-webpki",
@@ -4394,7 +4394,7 @@ checksum = "b94e3c7aa94f5b440eedeab677686629bddcb43edf52ef3703038cce98e2bf70"
 dependencies = [
  "async-dnssd",
  "async-recursion",
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "byteorder 1.5.0",
  "cfg-if",
  "crypto-mac",
@@ -4762,7 +4762,7 @@ version = "0.1.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "784e0ac535deb450455cbfa28a6f0df145ea1bb7ae51b821cf5e7927fdcfbdd0"
 dependencies = [
- "log 0.4.22",
+ "log 0.4.25",
  "pin-project-lite",
  "tracing-attributes",
  "tracing-core",
@@ -4795,7 +4795,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ee855f1f400bd0e5c02d150ae5de3840039a3f54b025156404e34c23c03f47c3"
 dependencies = [
- "log 0.4.22",
+ "log 0.4.25",
  "once_cell",
  "tracing-core",
 ]
@@ -4942,9 +4942,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "uuid"
-version = "1.11.1"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b913a3b5fe84142e269d63cc62b64319ccaf89b748fc31fe025177f767a756c4"
+checksum = "744018581f9a3454a9e15beb8a33b017183f1e7c0cd170232a2d1453b23a51c4"
 dependencies = [
  "getrandom",
  "serde",
@@ -5065,7 +5065,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2f0a0651a5c2bc21487bde11ee802ccaf4c51935d0d3d42a6101f98161700bc6"
 dependencies = [
  "bumpalo",
- "log 0.4.22",
+ "log 0.4.25",
  "proc-macro2",
  "quote",
  "syn 2.0.96",
@@ -5137,7 +5137,7 @@ version = "0.31.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b66249d3fc69f76fd74c82cc319300faa554e9d865dab1f7cd66cc20db10b280"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "rustix",
  "wayland-backend",
  "wayland-scanner",
@@ -5149,7 +5149,7 @@ version = "0.32.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7cd0ade57c4e6e9a8952741325c30bf82f4246885dca8bf561898b86d0c1f58e"
 dependencies = [
- "bitflags 2.7.0",
+ "bitflags 2.8.0",
  "wayland-backend",
  "wayland-client",
  "wayland-scanner",
@@ -5173,7 +5173,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "efa8ac0d8e8ed3e3b5c9fc92c7881406a268e11555abe36493efabe649a29e09"
 dependencies = [
  "dlib",
- "log 0.4.22",
+ "log 0.4.25",
  "pkg-config",
 ]
 
