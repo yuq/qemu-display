@@ -11,6 +11,12 @@ members = [
 default-members = ["qemu-rdw"]
 resolver = "2"
 
+[workspace.package]
+edition = "2021"
+rust-version = "1.77"
+license = "MIT"
+repository = "https://gitlab.com/marcandre.lureau/qemu-display"
+
 [workspace.dependencies]
 tracing = "0.1"
 zbus = { version = "5.0", features = ["p2p", "serde_bytes"] }
