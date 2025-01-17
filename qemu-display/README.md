@@ -25,13 +25,13 @@ qemu-display = "0.1.0"
 
 Here's a simple example of how to use the library:
 
-```rust
+```rust,no_run
+# use std::error::Error;
 use qemu_display::Display;
-use zbus::Connection;
 
 #[async_std::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let conn = Connection::session().await?;
+    let conn = zbus::Connection::session().await?;
     let display = Display::new::<()>(&conn, None).await?;
     // TODO: complete this example
     Ok(())
