@@ -2,9 +2,15 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand, ValueEnum};
 
+const VERSION: &str = concat!(
+    env!("CARGO_PKG_VERSION"),
+    "\nGit commit: ",
+    env!("GIT_HASH"),
+);
+
 /// QEMU "-display dbus" RDP server
 #[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
+#[command(version = VERSION, about, long_about = None)]
 pub struct Args {
     /// Print program capabilities in JSON.
     #[arg(long)]
