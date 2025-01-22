@@ -26,9 +26,11 @@ enum State {
 #[derive(Debug)]
 pub struct Inner {
     state: State,
+    dbus_nsamples: Option<u32>,
     start_time: Instant,
     ev_sender: Option<mpsc::UnboundedSender<ServerEvent>>,
-    rdp_started: bool,
+    client_fmt: Option<pdu::AudioFormat>,
+    opus_enc: opus::Encoder,
     _audio: Option<Audio>,
 }
 
@@ -102,14 +104,41 @@ impl AudioOutHandler for DBusHandler {
         debug!(?id, ?volume)
     }
 
-    async fn write(&mut self, id: u64, data: Vec<u8>) {
-        let inner = self.inner.lock().unwrap();
+    async fn write(&mut self, id: u64, mut data: Vec<u8>) {
+        let mut inner = self.inner.lock().unwrap();
 
-        if !inner.rdp_started || !matches!(inner.state, State::Ready(iid, _) if iid == id) {
+        let State::Ready(iid, fmt) = &inner.state else {
+            debug!("QEMU stream is not ready");
+            return;
+        };
+        let Some(client_fmt) = &inner.client_fmt else {
+            debug!("RDP client has not started and negotiated a compatible format");
+            return;
+        };
+        if *iid != id {
+            return;
+        }
+        // TODO: handle format conversion?
+        if client_fmt.n_channels != fmt.n_channels
+            || client_fmt.n_samples_per_sec != fmt.n_samples_per_sec
+            || client_fmt.bits_per_sample != fmt.bits_per_sample
+        {
+            debug!("Incompatible client and server formats");
             return;
         }
 
-        // TODO: handle format conversion
+        if client_fmt.format == pdu::WaveFormat::OPUS {
+            let input =
+                unsafe { std::slice::from_raw_parts(data.as_ptr() as *const i16, data.len() / 2) };
+            data = match inner.opus_enc.encode_vec(input, data.len()) {
+                Ok(data) => data,
+                Err(err) => {
+                    warn!("Failed to encode with Opus: {}", err);
+                    return;
+                }
+            }
+        }
+
         if let Some(sender) = inner.ev_sender.as_ref() {
             let ts = inner.start_time.elapsed().as_millis() as _;
             let _ = sender.send(ServerEvent::Rdpsnd(RdpsndServerMessage::Wave(data, ts)));
@@ -135,28 +164,63 @@ pub(crate) struct RDPSndHandler {
     inner: Arc<Mutex<Inner>>,
 }
 
+impl RDPSndHandler {
+    fn choose_format(&self, client_formats: &[pdu::AudioFormat]) -> Option<u16> {
+        for (n, fmt) in client_formats.iter().enumerate() {
+            if self.get_formats().contains(fmt) {
+                return u16::try_from(n).ok();
+            }
+        }
+        None
+    }
+}
+
+const OPUS_48K: pdu::AudioFormat = pdu::AudioFormat {
+    format: pdu::WaveFormat::OPUS,
+    n_channels: 2,
+    n_samples_per_sec: 48000,
+    n_avg_bytes_per_sec: 192000,
+    n_block_align: 4,
+    bits_per_sample: 16,
+    data: None,
+};
+
+const PCM_48K: pdu::AudioFormat = pdu::AudioFormat {
+    format: pdu::WaveFormat::PCM,
+    n_channels: 2,
+    n_samples_per_sec: 48000,
+    n_avg_bytes_per_sec: 192000,
+    n_block_align: 4,
+    bits_per_sample: 16,
+    data: None,
+};
+
 impl RdpsndServerHandler for RDPSndHandler {
     fn get_formats(&self) -> &[pdu::AudioFormat] {
-        &[pdu::AudioFormat {
-            format: pdu::WaveFormat::PCM,
-            n_channels: 2,
-            n_samples_per_sec: 48000,
-            n_avg_bytes_per_sec: 192000,
-            n_block_align: 4,
-            bits_per_sample: 16,
-            data: None,
-        }]
+        let inner = self.inner.lock().unwrap();
+
+        if let Some(nsamples) = &inner.dbus_nsamples {
+            if [120u32, 240, 480, 960].contains(nsamples) {
+                return &[OPUS_48K, PCM_48K];
+            }
+        }
+
+        debug!("No Opus codec since DBus has incompatible nsamples");
+        &[PCM_48K]
     }
 
-    fn start(&mut self, _client_format: &pdu::ClientAudioFormatPdu) -> Option<u16> {
-        let mut inner = self.inner.lock().unwrap();
-        inner.rdp_started = true;
-        Some(0)
+    fn start(&mut self, client_format: &pdu::ClientAudioFormatPdu) -> Option<u16> {
+        let fmt = self.choose_format(&client_format.formats);
+        if let Some(n) = fmt {
+            let mut inner = self.inner.lock().unwrap();
+            inner.client_fmt = Some(client_format.formats[usize::from(n)].clone());
+        }
+        fmt
     }
 
     fn stop(&mut self) {
         let mut inner = self.inner.lock().unwrap();
-        inner.rdp_started = false;
+        inner.client_fmt = None;
     }
 }
 
@@ -172,11 +236,14 @@ impl SoundHandler {
     pub async fn connect(display: &Display<'_>) -> Result<Self> {
         let mut audio =
             Audio::new(display.connection(), Some(display.destination().to_owned())).await?;
+        let dbus_nsamples = audio.proxy.nsamples().await.ok();
         let inner = Arc::new(Mutex::new(Inner {
             start_time: Instant::now(),
+            dbus_nsamples,
             state: State::Init,
             ev_sender: None,
-            rdp_started: false,
+            client_fmt: None,
+            opus_enc: opus::Encoder::new(48000, opus::Channels::Stereo, opus::Application::Audio)?,
             _audio: None,
         }));
 
