@@ -3708,6 +3708,7 @@ dependencies = [
  "keycodemap",
  "log 0.4.25",
  "once_cell",
+ "pixman-sys",
  "pretty_env_logger",
  "qemu-display",
  "rdw4",
