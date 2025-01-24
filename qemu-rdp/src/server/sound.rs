@@ -101,7 +101,23 @@ impl AudioOutHandler for DBusHandler {
     }
 
     async fn set_volume(&mut self, id: u64, volume: Volume) {
-        debug!(?id, ?volume)
+        let inner = self.inner.lock().unwrap();
+
+        debug!(?id, ?volume);
+
+        let (left, right) = if volume.mute {
+            (0, 0)
+        } else {
+            (volume.volume.get(0).copied().unwrap_or(0), volume.volume.get(1).copied().unwrap_or(0))
+        };
+
+        let (left, right) = ((left as u16) * 257, (right as u16) * 257);
+        if let Some(sender) = inner.ev_sender.as_ref() {
+            let _ = sender.send(ServerEvent::Rdpsnd(RdpsndServerMessage::SetVolume {
+                left,
+                right,
+            }));
+        }
     }
 
     async fn write(&mut self, id: u64, mut data: Vec<u8>) {
