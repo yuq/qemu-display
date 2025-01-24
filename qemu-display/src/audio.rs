@@ -63,6 +63,10 @@ pub trait Audio {
 
     /// RegisterInListener method
     fn register_in_listener(&self, listener: Fd<'_>) -> zbus::Result<()>;
+
+    /// NSamples property
+    #[zbus(property, name = "NSamples")]
+    fn nsamples(&self) -> zbus::Result<u32>;
 }
 
 #[derive(derivative::Derivative)]
