@@ -46,6 +46,9 @@ Some ideas to improve the project:
 - [ ] more types clipboard redirection
 - [ ] file system redirection
 - [ ] multimonitor
+- [ ] more efficient bitmap sharing with the dmabuf & mmap interfaces
+- [ ] VM status / simple management or communication
+- [ ] make it work on Win32 (untested, shouldn't be too hard)
 - tons of other stuff from RDP features, and a lot of bug fixes🐛
 
 ## Contributing
@@ -80,7 +83,7 @@ This project is licensed under the MIT License - see the [LICENSE](https://opens
 ## Acknowledgments
 
 - Thanks to contributors, especially [Mihnea
-Buzatu](https://github.com/mihneabuz) would did the initial work during GSoC
+Buzatu](https://github.com/mihneabuz) who did the initial work during GSoC
 2023
 - Credits to [IronRDP](https://github.com/Devolutions/IronRDP)
 - Red Hat!
