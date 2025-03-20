@@ -18,6 +18,8 @@ use crate::{
 };
 #[cfg(windows)]
 use crate::{ConsoleListenerD3d11, ConsoleListenerD3d11Handler};
+#[cfg(unix)]
+use crate::{ConsoleListenerMultiPlane, ConsoleListenerMultiPlaneHandler};
 
 #[zbus::proxy(default_service = "org.qemu", interface = "org.qemu.Display1.Console")]
 pub trait Console {
@@ -154,6 +156,25 @@ impl Console {
                 .at(
                     "/org/qemu/Display1/Listener",
                     ConsoleListenerD3d11::new(handler),
+                )
+                .await
+                .map_err(|e| e.into());
+        }
+
+        Err(crate::Error::Failed("Must call register first!".into()))
+    }
+
+    #[cfg(unix)]
+    pub async fn set_multi_plane_listener<H: ConsoleListenerMultiPlaneHandler>(
+        &self,
+        handler: H,
+    ) -> Result<bool> {
+        if let Some(l) = &*self.listener.write().unwrap() {
+            return l
+                .object_server()
+                .at(
+                    "/org/qemu/Display1/Listener",
+                    ConsoleListenerMultiPlane::new(handler),
                 )
                 .await
                 .map_err(|e| e.into());
